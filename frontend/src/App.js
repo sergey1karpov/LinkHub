@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import ProtectedRoute from './middleware/ProtectedRoute';
 import RestorePassword from './index/auth/RestorePassword';
 import EditPassword from './index/auth/EditPassword';
+import AddLink from './profile/Links/AddLink';
 
 function App() {
     const [userData, setUserData] = useState({})
@@ -56,9 +57,10 @@ function App() {
                             <Route path="/auth/change-password" element={<EditPassword />} />
                         </Route>    
                     </Route>
-                    <Route path="/profile/dashboard" element={<ProfileBase />}>
-                        <Route index element={<Profile />} />
+                    <Route element={<ProfileBase />}>
+                        <Route path="/profile/dashboard" element={<Profile />} />
                         <Route path="profile/edit" element={<EditProfile />} />
+                        <Route path="profile/add-link" element={<AddLink />} />
                     </Route>
                 </Routes>
             </AuthUserContext.Provider>

@@ -1,109 +1,52 @@
 import AuthUserContext from '../contexts/AuthUserContext';
 import { useContext } from 'react';
-import { NavLink, Outlet } from "react-router-dom"
-
-const styles = {
-    // display: 'flex',
-    justifyContent: 'center',
-    // alignItems: 'center',
-    // height: '100vh',
-    backgroundColor: '#08090a'
-}
+import { NavLink, Link, Outlet } from "react-router-dom"
 
 export default function ProfileBase() {
     const authUserData = useContext(AuthUserContext)
     
     return (
         <>
-            <nav className="bg-[#08090a] border-gray-200 dark:bg-gray-900">
+            <nav className="bg-[#08090a] border-gray-200 dark:bg-gray-900 fixed w-full z-20 top-0 start-0">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                    <a href="#" className="flex items-center space-x-3 rtl:space-x-reverse">
-                        <img className="w-8 h-8 rounded-full" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&w=3000&auto=format&fit=crop&q=60&ixlib=rb-4.0.3" alt="user photo" />
-                    </a>
+                    <Link to="/profile/dashboard" className="flex items-center space-x-3 rtl:space-x-reverse">
+                        <img className="w-16 h-16 rounded-full" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&w=3000&auto=format&fit=crop&q=60&ixlib=rb-4.0.3" alt="user photo" />
+                    </Link>
                     <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                        <button type="button" className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
-                            <span className="sr-only">Open user menu</span>
-                            
+                        <button type="submit" className="relative">
+                            <span className="absolute top-0 left-0 mt-2 ml-2 h-full w-full rounded bg-gray-400"></span>
+                            <span className="fold-bold relative inline-block h-full w-full rounded border-2 border-gray-100 bg-black px-7 py-3 text-2xl font-bold text-white transition duration-100 hover:bg-black hover:text-yellow-500">
+                                {`@${authUserData.slug}`}
+                            </span>
                         </button>
-                        <div className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
-                            <div className="px-4 py-3">
-                                <span className="block text-sm text-gray-900 dark:text-white">Bonnie Green</span>
-                                <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">name@flowbite.com</span>
-                            </div>
-                            <ul className="py-2" aria-labelledby="user-menu-button">
-                                <li>
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
-                                </li>
-                                <li>
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</a>
-                                </li>
-                                <li>
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <button data-collapse-toggle="navbar-user" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-user" aria-expanded="false">
-                            <span className="sr-only">Open main menu</span>
-                            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
-                        {/* <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                            <li>
-                                <a href="#" className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Home</a>
-                            </li>
-                            <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
-                            </li>
-                            <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Services</a>
-                            </li>
-                            <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Pricing</a>
-                            </li>
-                            <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
-                            </li>
-                        </ul> */}
                     </div>
                 </div>
             </nav>
 
-            <div style={styles}>
+            <div style={{backgroundColor: '#08090a', height: '100vh'}}>
                 <Outlet />
             </div>
 
-            <footer className="bg-black dark:bg-gray-900">
-                <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
-                    <div className="sm:flex sm:items-center sm:justify-between">
-                        <a href="https://flowbite.com/" className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-                            <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Flowbite Logo" />
-                            <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
-                        </a>
-                        <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
-                            <li>
-                                <a href="#" className="hover:underline me-4 md:me-6">About</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:underline me-4 md:me-6">Privacy Policy</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:underline me-4 md:me-6">Licensing</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:underline">Contact</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-                    <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2023 <a href="https://flowbite.com/" className="hover:underline">Flowbite™</a>. All Rights Reserved.</span>
-                </div>
-            </footer>
+            {/* <footer className="fixed bottom-0 left-0 z-20 w-full p-4 bg-[#08090a] border-t border-gray-200 shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800 dark:border-gray-600">
+                <div className='max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4'>   
+                    <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2023 <a href="https://flowbite.com/" className="hover:underline">Flowbite™</a>. All Rights Reserved.
+                    </span>
+                    <ul className="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+                        <li>
+                            <a href="#" className="hover:underline me-4 md:me-6">About</a>
+                        </li>
+                        <li>
+                            <a href="#" className="hover:underline me-4 md:me-6">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a href="#" className="hover:underline me-4 md:me-6">Licensing</a>
+                        </li>
+                        <li>
+                            <a href="#" className="hover:underline">Contact</a>
+                        </li>
+                    </ul>
+                </div>     
+            </footer> */}
         </>
     )
 }
