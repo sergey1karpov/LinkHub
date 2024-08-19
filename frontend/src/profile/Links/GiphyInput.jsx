@@ -59,7 +59,7 @@ export default function GiphyInput({giphy, setGiphy}) {
                     onChange={handleInputChange}
                     placeholder="Search gif..."
                     className="text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2"
-                    style={{backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/8/82/Giphy-logo.svg")`, backgroundSize: '150px', backgroundRepeat: 'no-repeat', backgroundPosition: 'right center'}}
+                    style={{backgroundOrigin: 'content-box', backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/8/82/Giphy-logo.svg")`, backgroundSize: '150px', backgroundRepeat: 'no-repeat', backgroundPosition: 'right center'}}
                 />
                 <div className="w-full" style={{ display: 'flex', flexWrap: 'wrap', backgroundColor: '#08090a' }}>
                     {gifs.map((gif, idx) => (

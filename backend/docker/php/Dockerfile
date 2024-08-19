@@ -24,6 +24,15 @@ RUN apt-get update && apt-get install -y \
     curl \
     libgd-dev
 
+RUN apt-get update \
+ && apt-get install --assume-yes --no-install-recommends --quiet \
+    build-essential \
+    libmagickwand-dev \
+ && apt-get clean all
+
+RUN pecl install imagick \
+ && docker-php-ext-enable imagick
+
 RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg
 
 RUN apt-get install -y librabbitmq-dev libssl-dev

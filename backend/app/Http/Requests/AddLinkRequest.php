@@ -25,7 +25,7 @@ class AddLinkRequest extends FormRequest
             'link_text' => 'required|string|max:255',
             'link_url' => 'required|url',
             'link_content' => 'nullable|string',
-            'img_src' => 'nullable|string|mimes:jpeg,jpg,png,gif|max:10000',
+            'img_src' => 'nullable|file|mimes:jpeg,jpg,png,gif|max:2000',
             'img_href' => 'nullable|string|url',
         ];
     }
