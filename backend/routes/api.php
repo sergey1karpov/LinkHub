@@ -14,6 +14,11 @@ Route::post('/change-password', [RestorePasswordController::class, 'changePasswo
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('/profile')->group(function () {
         Route::get('/{user}', [UserController::class, 'getUser'])->name('getUser');
+
         Route::post('/{user}/add-link', [LinkController::class, 'addLink'])->name('addLink');
+        Route::get('/link/{link}', [LinkController::class, 'getLink'])->name('getLink');
+        Route::get('/{user}/all-links', [LinkController::class, 'allLinks'])->name('allLinks');
+        Route::post('/{link}/edit-link', [LinkController::class, 'editLink'])->name('editLink');
+        Route::delete('/{link}/delete-link', [LinkController::class, 'deleteLink'])->name('deleteLink');
     });
 });

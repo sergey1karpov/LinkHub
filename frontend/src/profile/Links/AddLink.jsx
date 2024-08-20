@@ -54,7 +54,7 @@ export default function AddLink() {
         <div className="max-w-full mx-auto pl-2 pr-2 mb-5 bg-[#08090a]"> 
             <div className="max-w-screen-xl mx-auto pl-2 pr-2 mb-5 bg-[#08090a]">  
 
-                <LinkDemo title={linkText}/>
+                <LinkDemo title={linkText} img={img} gif={giphy}/>
 
                 <form onSubmit={(event) => handleAddLink(event)} encType="multipart/form-data">
                     <div className="text-center w-full">

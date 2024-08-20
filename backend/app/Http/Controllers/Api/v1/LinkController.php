@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddLinkRequest;
+use App\Http\Requests\EditLinkRequest;
 use App\Http\Services\ImageSaveService;
+use App\Models\Link;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
@@ -25,5 +27,37 @@ class LinkController extends Controller
         ]);
 
         return response()->json(['message' => 'Link added successfully.'], 201);
+    }
+
+    public function getLink(Link $link): JsonResponse
+    {
+        return response()->json([$link]);
+    }
+
+    public function allLinks(User $user): JsonResponse
+    {
+        return response()->json($user->links);
+    }
+
+    public function editLink(Link $link, AddLinkRequest $request): JsonResponse
+    {
+        $link->update([
+            'link_text' => $request->link_text,
+            'link_url' => $request->link_url,
+            'link_content' => $request->link_content,
+            'img_src' => $request->file('img_src') ?
+                $this->imageSaveService->saveImage($request->img_src) :
+                null,
+            'img_href' => $request->img_href,
+        ]);
+
+        return response()->json(['message' => 'Link updated successfully.'], 201);
+    }
+
+    public function deleteLink(Link $link): JsonResponse
+    {
+        $link->delete();
+
+        return response()->json(['message' => 'Link deleted successfully.'], 204);
     }
 }
