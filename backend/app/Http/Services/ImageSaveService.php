@@ -13,7 +13,13 @@ class ImageSaveService
         $manager = new ImageManager(new Driver());
         $imgName = hexdec(uniqid()).'.'.$photo->getClientOriginalExtension();
         $img = $manager->read($photo);
-        $img = $img->scale(100);
+
+        if($photo->getClientOriginalExtension() == 'gif') {
+            $img = $img->scale(150);
+        } else {
+            $img = $img->cover(300,300);
+        }
+
         $img->save(base_path('public/uploads/images/'.$imgName));
         return 'uploads/images/'.$imgName;
     }

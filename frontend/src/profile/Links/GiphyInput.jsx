@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { GiphyFetch } from '@giphy/js-fetch-api'
 
-export default function GiphyInput({giphy, setGiphy}) {
+export default function GiphyInput({setViewThumbnail, setGiphy}) {
     const [searchTerm, setSearchTerm] = useState('')
     const [gifs, setGifs] = useState([])
     const [page, setPage] = useState(0)
@@ -48,26 +48,38 @@ export default function GiphyInput({giphy, setGiphy}) {
         setGiphy(gifUrl)
 
         // console.log(gifInputRef.current)
+        gifInputRef.current.value = searchTerm
     }
 
     return (
         <div className="mt-2">
             <div>
                 <textarea
+                    maxLength={15}
                     ref={gifInputRef}
                     type="text"
                     onChange={handleInputChange}
                     placeholder="Search gif..."
                     className="text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2"
-                    style={{backgroundOrigin: 'content-box', backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/8/82/Giphy-logo.svg")`, backgroundSize: '150px', backgroundRepeat: 'no-repeat', backgroundPosition: 'right center'}}
+                    style={{
+                        backgroundOrigin: 'content-box', 
+                        backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/8/82/Giphy-logo.svg")`, 
+                        backgroundSize: '150px', 
+                        backgroundRepeat: 'no-repeat', 
+                        backgroundPosition: 'right center',
+                    }}
                 />
+
                 <div className="w-full" style={{ display: 'flex', flexWrap: 'wrap', backgroundColor: '#08090a' }}>
                     {gifs.map((gif, idx) => (
                         <div key={idx} style={{ marginTop: '8px' }}>
                             <img
                                 src={gif.images.fixed_height.url}
                                 alt={gif.title}
-                                onClick={() => handleGifClick(gif.images.original.url)}
+                                onClick={() => {
+                                    handleGifClick(gif.images.original.url)
+                                    setViewThumbnail('')
+                                }}
                                 style={{ cursor: 'pointer' }}
                             />
                         </div>

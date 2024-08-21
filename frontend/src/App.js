@@ -1,5 +1,6 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
+import './AlertEffect.css'
 
 import MainBase from './index/MainBase';
 import Registration from './index/auth/Registration';
