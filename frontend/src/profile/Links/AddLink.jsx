@@ -85,7 +85,16 @@ export default function AddLink() {
 
     return ( 
         <div>
-            <LinkDemo isLinkAdded={isLinkAdded} setIsLinkAdded={setIsLinkAdded} title={linkText} viewThumbnail={viewThumbnail} setViewThumbnail={setViewThumbnail} gif={giphy} setGiphy={setGiphy} />
+            <LinkDemo 
+                isLinkAdded={isLinkAdded} 
+                setIsLinkAdded={setIsLinkAdded} 
+                title={linkText} 
+                viewThumbnail={viewThumbnail} 
+                setViewThumbnail={setViewThumbnail} 
+                giphy={giphy} 
+                setGiphy={setGiphy} 
+                alertText={'Link created!'}
+            />
             <div className="max-w-full mx-auto pl-2 pr-2 mb-5 bg-[#08090a]"> 
                 <div className="max-w-screen-xl mx-auto pl-2 pr-2 mb-5 bg-[#08090a]"> 
 

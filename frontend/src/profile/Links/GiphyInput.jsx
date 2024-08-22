@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { GiphyFetch } from '@giphy/js-fetch-api'
 
-export default function GiphyInput({setViewThumbnail, setGiphy}) {
+export default function GiphyInput(props) {
     const [searchTerm, setSearchTerm] = useState('')
     const [gifs, setGifs] = useState([])
     const [page, setPage] = useState(0)
@@ -45,7 +45,7 @@ export default function GiphyInput({setViewThumbnail, setGiphy}) {
         setGifs([])
         gifInputRef.current.value = gifUrl
         //Уст в пропс
-        setGiphy(gifUrl)
+        props.setGiphy(gifUrl)
 
         // console.log(gifInputRef.current)
         gifInputRef.current.value = searchTerm
@@ -78,7 +78,10 @@ export default function GiphyInput({setViewThumbnail, setGiphy}) {
                                 alt={gif.title}
                                 onClick={() => {
                                     handleGifClick(gif.images.original.url)
-                                    setViewThumbnail('')
+                                    props.setViewThumbnail('')
+                                    props.setCurrentImg('')
+                                    props.setCurrentGiphy('')
+                                    props.setImg('')
                                 }}
                                 style={{ cursor: 'pointer' }}
                             />

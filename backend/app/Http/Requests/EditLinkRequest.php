@@ -11,7 +11,7 @@ class EditLinkRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class EditLinkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'link_text' => 'required|string|max:255',
+            'link_url' => 'required|url',
+            'link_content' => 'nullable|string',
+            'img_src' => 'nullable',
+            'img_href' => 'nullable|string|url',
         ];
     }
 }

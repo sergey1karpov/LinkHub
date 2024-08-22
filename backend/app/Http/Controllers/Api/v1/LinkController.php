@@ -47,11 +47,39 @@ class LinkController extends Controller
             'link_content' => $request->link_content,
             'img_src' => $request->file('img_src') ?
                 $this->imageSaveService->saveImage($request->img_src) :
-                null,
-            'img_href' => $request->img_href,
+                $link->img_src,
+            'img_href' => $request->img_href ? $request->img_href : $link->img_href,
         ]);
 
         return response()->json(['message' => 'Link updated successfully.'], 201);
+    }
+
+    public function deleteImage(Link $link): JsonResponse
+    {
+        $link->update([
+            'img_src' => null,
+            'img_href' => null
+        ]);
+
+        return response()->json(['message' => 'Image deleted.'], 201);
+    }
+
+    public function clearImage(Link $link): JsonResponse
+    {
+        $link->update([
+            'img_src' => null,
+        ]);
+
+        return response()->json(['message' => 'Image deleted.'], 201);
+    }
+
+    public function clearGiphy(Link $link): JsonResponse
+    {
+        $link->update([
+            'img_href' => null,
+        ]);
+
+        return response()->json(['message' => 'Giphy deleted.'], 201);
     }
 
     public function deleteLink(Link $link): JsonResponse

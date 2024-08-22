@@ -1,11 +1,45 @@
 import { useEffect, useState } from "react"
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 export default function LinkDemo(props) {
+    const params = useParams()
+
     const [isChecked, setIsChecked] = useState(false);
     const [alertColor, setAlertColor] = useState('')
     const [alertText, setAlertText] = useState('')
 
-    function clearImage() {
+    async function clearImage(event) {
+        if(props.currentImg || props.currentGiphy || props.img || props.giphy) {
+            event.preventDefault()
+
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('chrry-api-token')}`,
+                    'content-type': 'multipart/form-data',
+                    'Accept': 'application/json'
+                }
+            }
+
+            let data = new FormData()
+
+            try {
+                await axios.post(`http://localhost/api/profile/${params.link}/delete-image`, data, config)
+                    .then((response) => {
+                        console.log(response)
+                        props.setCurrentImg('')
+                        props.setCurrentGiphy('')
+                        props.setImg('')
+                        props.setGiphy('')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         props.setViewThumbnail('')
         props.setGiphy('')
     }
@@ -17,7 +51,7 @@ export default function LinkDemo(props) {
     useEffect(() => {
         if(props.isLinkAdded) {
             setAlertColor('bg-green-400 flash-effect')
-            setAlertText('Link created!')
+            setAlertText(`${props.alertText}`)
             const timeoutId = setTimeout(() => {
                 setAlertColor('')
                 setAlertText('')
@@ -48,19 +82,31 @@ export default function LinkDemo(props) {
                                                 }}>
                                                 <div className="flex align-center justify-between"
                                                     style={{'paddingLeft': '4px', 'paddingRight': '4px'}}>
-                                                    <div className="col-span-1 flex items-center flex-none">
+                                                    <div className="col-span-1 flex items-center flex-none" style={{'width':'50px'}}> 
+                                                        {props.currentImg && <img className="mt-1 mb-1"
+                                                            src={`http://localhost/${props.currentImg}`}
+                                                            id="avatar-user"
+                                                            style={{'width':'50px', 'borderRadius': '10px'}} />} 
+                                                        {props.currentGiphy && <img className="mt-1 mb-1"
+                                                            src={props.currentGiphy}
+                                                            id="avatar-user"
+                                                            style={{'width':'50px', 'borderRadius': '10px'}} />}       
+
                                                         {props.viewThumbnail && <img className="mt-1 mb-1"
                                                             src={props.viewThumbnail}
                                                             id="avatar-user"
-                                                            style={{'width':'50px', 'height': '50px', 'borderRadius': '10px', 'objectFit': 'cover', 'display': 'block'}} />}  
-                                                        {props.gif && <img className="mt-1 mb-1"
-                                                            src={props.gif}
+                                                            style={props.viewThumbnail.split(',')[0] === 'data:image/gif;base64' ? 
+                                                                {'width':'50px', 'borderRadius': '10px'} : 
+                                                                {'width':'50px', 'borderRadius': '10px', 'height': '50px', 'objectFit': 'cover', 'display': 'block'}
+                                                            }/>}  
+                                                        {props.giphy && <img className="mt-1 mb-1"
+                                                            src={props.giphy}
                                                             id="avatar-user"
                                                             style={{'width':'50px', 'borderRadius': '10px'}} />}   
-                                                        {!props.gif && !props.viewThumbnail && <img className="mt-1 mb-1"
-                                                            src={props.gif}
+                                                        {/* {!props.giphy && !props.viewThumbnail && <img className="mt-1 mb-1"
+                                                            src={props.giphy}
                                                             id="avatar-user"
-                                                            style={{'width':'50px', 'borderRadius': '10px'}} /> }       
+                                                            style={{'width':'50px', 'borderRadius': '10px'}} /> }        */}
                                                     </div>
                                                     <button type="submit"
                                                             style={{
@@ -72,7 +118,7 @@ export default function LinkDemo(props) {
                                                             <div className="ml-3 mr-3">
                                                                 <h4 id="title-text" className="drop-shadow-md text-ellipsis"
                                                                     style={{'margin': '0 0 0 5px'}}>
-                                                                        {props.title} {alertText}
+                                                                        {props.title && props.title} <span style={{color: 'white', fontWeight: 'bold'}}>{alertText}</span>
                                                                 </h4>
                                                             </div>
                                                         </div>
@@ -101,7 +147,7 @@ export default function LinkDemo(props) {
                 {/* </div> */}
                 <div>
                     <div className="flex justify-center items-center mt-4">
-                        <button onClick={clearImage} type="button" className="mr-2 px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <button onClick={(event) => clearImage(event)} type="button" className="mr-2 px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                             Clear images
                         </button>
                         <div className="ml-2 mt-1 mr-3">
