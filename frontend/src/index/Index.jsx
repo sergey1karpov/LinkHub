@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom"
 
+//Главная страница сайта
 export default function Index() {
     return (
         <div className="m-4">  

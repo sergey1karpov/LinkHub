@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditLinkRequest extends FormRequest
+class LinkRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +18,7 @@ class EditLinkRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -25,7 +26,7 @@ class EditLinkRequest extends FormRequest
             'link_text' => 'required|string|max:255',
             'link_url' => 'required|url',
             'link_content' => 'nullable|string',
-            'img_src' => 'nullable',
+            'img_src' => 'nullable|mimes:jpeg,jpg,png,gif|max:2000',
             'img_href' => 'nullable|string|url',
         ];
     }

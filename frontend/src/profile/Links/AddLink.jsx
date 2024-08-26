@@ -1,22 +1,24 @@
 import { useState, useContext } from "react"
-import GiphyInput from "./GiphyInput"
-import AuthUserContext from "../../contexts/AuthUserContext"
 import axios from "axios";
 import LinkDemo from "./LinkDemo";
+import GiphyInput from "./GiphyInput"
+import AuthUserContext from "../../contexts/AuthUserContext"
 
 export default function AddLink() {
-    const authUserData = useContext(AuthUserContext)
+    const authUserData = useContext(AuthUserContext) //Подключаем контекст
 
-    const [linkText, setLinkText] = useState('')
-    const [linkUrl, setLinkUrl] = useState('')
-    const [linkContent, setLinkContent] = useState('')
-    const [img, setImg] = useState('')
-    const [viewThumbnail, setViewThumbnail] = useState('')
-    const [giphy, setGiphy] = useState('')
-    const [errors, setErrors] = useState([])
+    //LinkData
+    const [linkText, setLinkText] = useState('') //Текст ссылки
+    const [linkUrl, setLinkUrl] = useState('') //Ссылка
+    const [linkContent, setLinkContent] = useState('') //Доп контент к ссылке если есть
+    const [img, setImg] = useState('') //Загружаемое юзером изображение
+    const [giphy, setGiphy] = useState('') //Вместо изображения можно подтянуть гифку с giphy.com
 
-    const [isLinkAdded, setIsLinkAdded] = useState(false)
+    const [viewThumbnail, setViewThumbnail] = useState('') //Изображение которое отображается в превью ссылки, не отправляется в бд!!!
+    const [errors, setErrors] = useState([]) //Валидационные ошибки если есть
+    const [isLinkAdded, setIsLinkAdded] = useState(false) //Маркер что ссылка добавлена
 
+    //Рендер валидационных ошибок если есть
     const renderErrors = (field) => (
         errors?.[field]?.map((error, index) => (
             <div key={index} className="text-gray-100 bg-red-400 mt-2 rounded bg-danger">
@@ -25,21 +27,23 @@ export default function AddLink() {
         ))
     )
 
+    //Функция ресайза изображения для превью\демо ссылки
     function handleResizeImage(event) {
-        const file = event.target.files[0]
+        const file = event.target.files[0] //Берем загружаемый файл
         
         if(file) {
             const reader = new FileReader()
             reader.onload = (e) => {
-                setImg(file)
-                setViewThumbnail(e.target.result)
+                setImg(file) //Устанавливаем загруженный файл в img через сеттер setImg(отправляем в бд)
+                setViewThumbnail(e.target.result) //Устанавливаем загруженный файл в превью(НЕ отправляем в бд)
             }
             reader.readAsDataURL(file)
         }
 
-        event.target.value = ''
+        event.target.value = '' //чистим кеш инпута
     }
 
+    //Функция создания ссылки
     async function handleAddLink(event) {
         event.preventDefault()
 
@@ -62,6 +66,7 @@ export default function AddLink() {
         try {
             await axios.post(`http://localhost/api/profile/${localStorage.getItem('chrry-userId')}/add-link`, data, config)
                 .then((response) => {
+                    //После успешной отправки данных очищаем поля формы
                     setLinkText('')
                     setLinkUrl('')
                     setLinkContent('')
@@ -69,6 +74,7 @@ export default function AddLink() {
                     setViewThumbnail('')
                     setGiphy('')
 
+                    //Так же добавляем маркер что ссылка добавлена
                     if(response.status == 201) {
                         setIsLinkAdded(true)
                     }
@@ -76,7 +82,6 @@ export default function AddLink() {
                 .catch((error) => {
                     setErrors(error.response.data.errors)
                     setImg('')
-                    console.log(errors)
                 })
         } catch (error) {
             setErrors(error.response.data.errors);
@@ -85,19 +90,20 @@ export default function AddLink() {
 
     return ( 
         <div>
+            {/* Компонент отрисовки превью созданной ссылки, того как она будет выглядеть после создания */}
             <LinkDemo 
-                isLinkAdded={isLinkAdded} 
-                setIsLinkAdded={setIsLinkAdded} 
-                title={linkText} 
-                viewThumbnail={viewThumbnail} 
-                setViewThumbnail={setViewThumbnail} 
-                giphy={giphy} 
-                setGiphy={setGiphy} 
-                alertText={'Link created!'}
+                isLinkAdded={isLinkAdded} //Маркер что ссылка добавлена
+                setIsLinkAdded={setIsLinkAdded} //Сеттер для маркера что ссылка добавлена
+                alertText={'Link created!'} //Текс для маркера об успешном добавлении ссылки
+
+                title={linkText} //Текст ссылки
+                viewThumbnail={viewThumbnail} //Превью изображения, вместо реального изображения
+                setViewThumbnail={setViewThumbnail} //Сеттер для превью
+                giphy={giphy} //Гифка с giphy
+                setGiphy={setGiphy} //Сеттер для giphy
             />
             <div className="max-w-full mx-auto pl-2 pr-2 mb-5 bg-[#08090a]"> 
                 <div className="max-w-screen-xl mx-auto pl-2 pr-2 mb-5 bg-[#08090a]"> 
-
                     <form onSubmit={(event) => handleAddLink(event)} encType="multipart/form-data">
                         <div className="text-center w-full">
                             {renderErrors('link_text')}
@@ -142,8 +148,8 @@ export default function AddLink() {
                                 </div>
                                 <input 
                                     onChange={(e) => {
-                                        handleResizeImage(e)
-                                        setGiphy('')
+                                        handleResizeImage(e) //Функция обработчик для картинки превью
+                                        setGiphy('') //В случае если у нас уже установлена гифка, и мы хотим загрузить картинку, то через setGiphy удаляем гифку
                                     }} 
                                     placeholder="Upload image" 
                                     type="file" 
@@ -153,6 +159,10 @@ export default function AddLink() {
                             </label>
                         </div>  
 
+                        {/* Компонент инпута поиска и подгрузки гиф с сервиса giphy.com */}
+                        {/* В компонент передаем 2 пропса: setViewThumbnail - установка изображения в превью, setGiphy - установка гифки */}
+                        {/* Если у нас установлена картинка, то в превью отображается viewThumbnail, далее хотим заменить картинку на гифку с сервиса
+                        и при выборе этой гифки мы очищаем viewThumbnail через setViewThumbnail и устанавливаем гифку setGiphy*/}
                         <GiphyInput setViewThumbnail={setViewThumbnail} setGiphy={setGiphy}/>
 
                         <div className="text-center">

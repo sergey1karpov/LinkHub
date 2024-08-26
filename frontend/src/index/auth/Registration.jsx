@@ -3,36 +3,42 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 export default function Registration() {
+    //Устанавливаем начальное состояние для переменных => [переменная, функция установщик состояния(setter)]
     const [firstname, setFirstName] = useState('')
     const [lastname, setLastName] = useState('')
     const [username, setUserName] = useState('')
     const [slug, setSlug] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [errors, setErrors] = useState([])
+    const [errors, setErrors] = useState([]) //Состояние для ошибок валидации, по дефолту пустой массив
 
-    const navigate = useNavigate();
+    const navigate = useNavigate(); //Для редиректа
 
+    //Функция обработчик формы регистрации
     async function handleRegistration(event) {
-        event.preventDefault()
+        event.preventDefault() //Отменяем привычное состояние кнопки(перезагрузка при нажатии)
 
-        let data = {firstname, lastname, username, slug, email, password}
+        let data = {firstname, lastname, username, slug, email, password} //Формируем объект данных для отправки на сервер
 
         try {
-            const result = await axios.post('http://localhost/api/registration', data);
+            const result = await axios.post('http://localhost/api/registration', data); //Отправляем данные, получаем в ответ токен, юзернейм и id изера
 
+            //Полученные данные записываем в localStorage
             localStorage.setItem('chrry-userId', result.data.userId)
             localStorage.setItem('chrry-username', result.data.username)
             localStorage.setItem('chrry-api-token', result.data.token)
 
-            navigate(`/profile/dashboard`); 
+            navigate(`/profile/dashboard`); //Редирект в личный кабинет после успешной регистрации 
         } catch (error) {
-            setErrors(error.response.data.errors);
+            setErrors(error.response.data.errors); //Если есть ошибки валидации, записывем их в errors через сеттер setErrors[field => error]
         }
     }
 
+    //Обработка валидационных ошибок
+    //Example: передаем поле(field) = 'firstname', если в errors есть ошибка по ключу 'firstname', то итерируемся
+    //по ней field => error и выводим над инпутом
     const renderErrors = (field) => (
-        errors?.[field]?.map((error, index) => (
+        errors?.[field]?.map((error, index) => ( //Если ошибки есть, итерируемся по каждой [field => error] и записываем в renderErrors
             <div key={index} className="text-rose-500 mb-1 rounded bg-danger">
                 {error}
             </div>
@@ -49,7 +55,7 @@ export default function Registration() {
             <div className="mt-5">
                 <form onSubmit={(event) => handleRegistration(event)}>
                 <div className="mb-6 text-center">
-                        {renderErrors('firstname')}
+                        {renderErrors('firstname')} {/* Если есть ошибка в firstname, то выводим ее */}
                         <input 
                             value={firstname} 
                             onChange={(e) => setFirstName(e.target.value)} 
@@ -121,87 +127,5 @@ export default function Registration() {
                 </form>
             </div>
         </div>
-
-
-
-        // <div className="md:w-auto w-full m-4">
-        //     <div className="text-center">  
-        //         <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-200 md:text-5xl lg:text-6xl dark:text-white">Join to 
-        //             <span className="text-transparent bg-clip-text bg-gradient-to-r to-rose-600 from-rose-400 ml-2">
-        //                 CHRRY.ME
-        //             </span> 
-        //         </h1>
-        //         <form onSubmit={(event) => handleRegistration(event)}>
-        //             <div className="mb-6 text-center">
-        //                 {renderErrors('firstname')}
-        //                 <input 
-        //                     value={firstname} 
-        //                     onChange={(e) => setFirstName(e.target.value)} 
-        //                     placeholder="First Name" 
-        //                     type="text" 
-        //                     className={renderErrors('firstname') ? "text-gray-900 text-sm rounded-lg block w-full p-2.5 bg-red-300" : "text-gray-900 text-sm rounded-lg block w-full p-2.5" }
-        //                 />
-        //             </div>   
-        //             <div className="mb-6 text-center">
-        //                 {renderErrors('lastname')}
-        //                 <input 
-        //                     value={lastname}  
-        //                     onChange={(e) => setLastName(e.target.value)} 
-        //                     placeholder="Last Name" 
-        //                     type="text" 
-        //                     className={renderErrors('lastname') ? "text-gray-900 text-sm rounded-lg block w-full p-2.5 bg-red-300" : "text-gray-900 text-sm rounded-lg block w-full p-2.5" }
-        //                 />
-        //             </div> 
-        //             <div className="mb-6 text-center">
-        //                 {renderErrors('username')}
-        //                 <input 
-        //                     value={username}
-        //                     onChange={(e) => setUserName(e.target.value)} 
-        //                     placeholder="Username" 
-        //                     type="text" 
-        //                     className={renderErrors('username') ? "text-gray-900 text-sm rounded-lg block w-full p-2.5 bg-red-300" : "text-gray-900 text-sm rounded-lg block w-full p-2.5" }
-        //                 />
-        //             </div> 
-        //             <div className="mb-6 text-center">
-        //                 {renderErrors('slug')}
-        //                 <input 
-        //                     value={slug}  
-        //                     onChange={(e) => setSlug(e.target.value)} 
-        //                     placeholder="Slug" 
-        //                     type="text" 
-        //                     className={renderErrors('slug') ? "text-gray-900 text-sm rounded-lg block w-full p-2.5 bg-red-300" : "text-gray-900 text-sm rounded-lg block w-full p-2.5" } 
-        //                 />
-        //             </div> 
-        //             <div className="mb-6 text-center">
-        //                 {renderErrors('email')}
-        //                 <input 
-        //                     value={email}  
-        //                     onChange={(e) => setEmail(e.target.value)} 
-        //                     placeholder="Email" 
-        //                     type="email" 
-        //                     className={renderErrors('email') ? "text-gray-900 text-sm rounded-lg block w-full p-2.5 bg-red-300" : "text-gray-900 text-sm rounded-lg block w-full p-2.5" } 
-        //                 />
-        //             </div> 
-        //             <div className="mb-6 text-center">
-        //                 {renderErrors('password')}
-        //                 <input 
-        //                     value={password}  
-        //                     onChange={(e) => setPassword(e.target.value)} 
-        //                     placeholder="Password" 
-        //                     type="password" 
-        //                     className={renderErrors('password') ? "text-gray-900 text-sm rounded-lg block w-full p-2.5 bg-red-300" : "text-gray-900 text-sm rounded-lg block w-full p-2.5" }
-        //                 />
-        //             </div> 
-        //             <div className="mb-6 text-center">
-        //                 <button 
-        //                     type="submit" 
-        //                     className="mb-5 text-white text-xl bg-gradient-to-br from-rose-500 to-rose-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-        //                 >
-        //                     Register
-        //                 </button>
-        //             </div>
-        //         </form>
-        //     </div>
-        // </div>
     )
 }

@@ -1,11 +1,13 @@
 import { useState } from "react"
 import axios from "axios";
 
+//Компонент восставновления пароля
 export default function RestorePassword() {
-    const [email, setEmail] = useState('')
-    const [errors, setErrors] = useState([])
-    const [showAllert, setShowAllert] = useState(false)
+    const [email, setEmail] = useState('') //Начальное состояние для email
+    const [errors, setErrors] = useState([]) //Начальное состояние для ошибок валидации если будут
+    const [showAllert, setShowAllert] = useState(false) //alert для уведомления что письмо ушло на почту
     
+    //Ошибки валидации данных
     const renderErrors = (field) => (
         errors?.[field]?.map((error, index) => (
             <div key={index} className="text-rose-500 mb-1 rounded bg-danger">
@@ -14,20 +16,23 @@ export default function RestorePassword() {
         ))
     )
 
+    //Блок с алертом, об успешной отправке письма на почту
     const okAllert = <div className="text-green-500 mb-1 rounded bg-danger">
                         We have sent you an email and attached a link to reset your password
                     </div>
 
+    //Функция обработчик восстановление пароля
     async function handleRestore(event) {
         event.preventDefault()
 
         try {
             const result = await axios.post('http://localhost/api/restore-password', {email});
+
+            //Если после отправки данных получаем от сервера код 200, то showAllert устанавливаем в true и отображаем его
             if (result.status === 200) {
                 setShowAllert(true)
             }
         } catch (error) {
-            console.log(error)
             setErrors(error.response.data.errors);
         }
     }
@@ -40,6 +45,7 @@ export default function RestorePassword() {
                         Restore your password
                 </h1>
 
+                {/* Если showAllert == true, то отображаем содержимое okAllert */}
                 {showAllert && okAllert}
 
                 <div className="mt-5">

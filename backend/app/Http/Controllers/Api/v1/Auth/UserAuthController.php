@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UserAuthController extends Controller
 {
+    /**
+     * Register new user
+     *
+     * @param UserRegistrationRequest $request
+     * @return JsonResponse
+     */
     public function registration(UserRegistrationRequest $request): JsonResponse
     {
         $user = User::create([
@@ -29,8 +35,17 @@ class UserAuthController extends Controller
         ]);
     }
 
+    /**
+     * Login user
+     *
+     * @param UserLoginRequest $request
+     * @return JsonResponse
+     */
     public function login(UserLoginRequest $request): JsonResponse
     {
+        /**
+         * Login to the service by email or username
+         */
         $user = User::where('email', $request->emailOrUsername)
             ->orWhere('username', $request->emailOrUsername)
             ->first();

@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react"
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 
+//Компонент превью ссылки
 export default function LinkDemo(props) {
     const params = useParams()
 
-    const [isChecked, setIsChecked] = useState(false);
-    const [alertColor, setAlertColor] = useState('')
-    const [alertText, setAlertText] = useState('')
+    const [isChecked, setIsChecked] = useState(false); //Состояние дня/ночи для фона
+    const [alertColor, setAlertColor] = useState('') //Состояние для цвета успеха при добавлении/изменении ссылки
+    const [alertText, setAlertText] = useState('') //Состояние для текста при успешном добавлении/изменении ссылки
 
+    //Функция очистки(удаления) изображения/giphy
     async function clearImage(event) {
+        //Если есть текущее изображение, текущая giphy, изображение у ссылки или giphy
         if(props.currentImg || props.currentGiphy || props.img || props.giphy) {
             event.preventDefault()
 
@@ -24,9 +27,10 @@ export default function LinkDemo(props) {
             let data = new FormData()
 
             try {
+                //Делаем запрос на сервер с удалением из ссылки img и giphy
                 await axios.post(`http://localhost/api/profile/${params.link}/delete-image`, data, config)
-                    .then((response) => {
-                        console.log(response)
+                    .then(() => {
+                        //Очищаем все
                         props.setCurrentImg('')
                         props.setCurrentGiphy('')
                         props.setImg('')
@@ -40,15 +44,18 @@ export default function LinkDemo(props) {
             }
         }
 
+        //Если у поста нет ни прикрипленного ихображения, ни giphy, но есть превью img и giphy => просто очищаем 
         props.setViewThumbnail('')
         props.setGiphy('')
     }
 
+    //Переключение цвета фона ссылки для удобства под стили
     function dayVsNight(event) {
         setIsChecked(event.target.checked);
     }
 
     useEffect(() => {
+        //Если isLinkAdded == true, то зыпускаем зеленыую вспышку об успещном действии
         if(props.isLinkAdded) {
             setAlertColor('bg-green-400 flash-effect')
             setAlertText(`${props.alertText}`)
@@ -65,7 +72,6 @@ export default function LinkDemo(props) {
     return (
         <div className="fixed mt-24 w-full mx-auto max-w-screen-xl z-50" style={{'position': 'sticky', 'top': 0}}>
             <div id="matureBlock" className={ `${isChecked ? 'bg-[#08090a]' : 'bg-white'} mt-24 rounded-b-lg mt-1 mx-auto max-w-screen-xl px-4 pt-4 pb-4 sm:px-6 lg:px-8` } >
-                {/* <div className="flex justify-center"> */}
                     <div className="group block">
                         <table className="table w-full">
                             <tbody>
@@ -73,7 +79,6 @@ export default function LinkDemo(props) {
                                 <td>
                                     <div id="block" className="justify-center text-center" data-index="" data-position="">
                                         <div className="lg:flex lg:justify-center">
-                                            {/* <div className="row card ms-1 me-1 bg-red-200 lg:w-2/4" id="background" */}
                                             <div className={`${alertColor} row card ms-1 me-1 lg:w-2/4`} id="background"
                                                 style={{
                                                     'animationDuration': '2s',
@@ -83,15 +88,17 @@ export default function LinkDemo(props) {
                                                 <div className="flex align-center justify-between"
                                                     style={{'paddingLeft': '4px', 'paddingRight': '4px'}}>
                                                     <div className="col-span-1 flex items-center flex-none" style={{'width':'50px'}}> 
+                                                        {/* Если есть текущее изображение, то отображаем его */}
                                                         {props.currentImg && <img className="mt-1 mb-1"
                                                             src={`http://localhost/${props.currentImg}`}
                                                             id="avatar-user"
-                                                            style={{'width':'50px', 'borderRadius': '10px'}} />} 
+                                                            style={{'width':'50px', 'borderRadius': '10px'}} />}
+                                                        {/* Если есть текущее giphy, то отображаем его */} 
                                                         {props.currentGiphy && <img className="mt-1 mb-1"
                                                             src={props.currentGiphy}
                                                             id="avatar-user"
                                                             style={{'width':'50px', 'borderRadius': '10px'}} />}       
-
+                                                        {/* Если мы зашрузили свое изображение, оно обработалось в превью и мы отображаем его */}
                                                         {props.viewThumbnail && <img className="mt-1 mb-1"
                                                             src={props.viewThumbnail}
                                                             id="avatar-user"
@@ -99,14 +106,11 @@ export default function LinkDemo(props) {
                                                                 {'width':'50px', 'borderRadius': '10px'} : 
                                                                 {'width':'50px', 'borderRadius': '10px', 'height': '50px', 'objectFit': 'cover', 'display': 'block'}
                                                             }/>}  
+                                                        {/* Если мы загрузили giphy и оно в превью     */}
                                                         {props.giphy && <img className="mt-1 mb-1"
                                                             src={props.giphy}
                                                             id="avatar-user"
                                                             style={{'width':'50px', 'borderRadius': '10px'}} />}   
-                                                        {/* {!props.giphy && !props.viewThumbnail && <img className="mt-1 mb-1"
-                                                            src={props.giphy}
-                                                            id="avatar-user"
-                                                            style={{'width':'50px', 'borderRadius': '10px'}} /> }        */}
                                                     </div>
                                                     <button type="submit"
                                                             style={{

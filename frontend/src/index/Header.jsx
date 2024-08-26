@@ -2,22 +2,25 @@ import { Link, NavLink } from "react-router-dom"
 import AuthUserContext from '../contexts/AuthUserContext';
 import { useContext } from "react";
 
+//Выход, очищаем localStorage и редиректим на главную
 function Logout() {
     localStorage.removeItem('chrry-userId')
     localStorage.removeItem('chrry-username')
     localStorage.removeItem('chrry-api-token')
-
     window.location.replace("http://localhost:3000/");
 }
 
+//Закрытие шторки с меню на мобилках
 function closeDrawer() {
     const elem = document.getElementById('drawer-btn')
     elem.click()
 }
 
 export default function Header() {
+    // Достаем авторизированного пользователя из контекста
     const userData = useContext(AuthUserContext);
 
+    //Компонент хедера
     return (
         <nav className="bg-[#08090a] border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -59,13 +62,8 @@ export default function Header() {
                         </svg>
                         <span className="sr-only">Close menu</span>
                     </button>
-
-                    
                     <div className="mt-10">
                         <div className="m-4">  
-                            {/* <h1 className="text-center mb-4 text-4xl font-extrabold text-gray-200 dark:text-white md:text-5xl lg:text-6xl">
-                                <img width={`450px`} height={`450px`} src="https://i.ibb.co/kQdGDSs/logosize.png" />
-                            </h1> */}
                             <h1 className="text-center mb-4 text-4xl font-extrabold text-gray-200 dark:text-white md:text-5xl lg:text-6xl">
                                     Menu
                             </h1>

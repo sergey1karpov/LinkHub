@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import axios from "axios";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 export default function AllLinks() {
-    const [links, setLinks] = useState([])
+    const [links, setLinks] = useState([]) //Состояние для ссылок, по дефолту пустой массив
 
     const config = {
         headers: {
@@ -13,6 +13,7 @@ export default function AllLinks() {
         }
     }
 
+    //Удаление ссылки
     async function handleDeleteLink(event, linkId) {
         event.preventDefault()
         try {
@@ -24,10 +25,11 @@ export default function AllLinks() {
         }
     }
 
+    //При отрисовки компонента делаем запрос на сервер для получения всех ссылок юзера
     useEffect(() => {
         try {
             axios.get(`http://localhost/api/profile/${localStorage.getItem('chrry-userId')}/all-links`, config)
-                .then((response) => setLinks(response.data))
+                .then((response) => setLinks(response.data)) //Устанавливаем полученные ссылки в links
                 .catch((err) => console.log(err))
         } catch (error) {
             console.log(error)
@@ -36,7 +38,7 @@ export default function AllLinks() {
 
     return (
         <div className="mt-24">
-            {links && links.map((link) => {
+            {links && links.map((link) => { {/*Итерация по ссылкам через map js */}
                 return (
                     <div key={link.id} className="max-w-full mx-auto pl-2 pr-2 bg-[#08090a]"> 
                         <div className="bg-[#08090a] rounded-b-lg mt-1 mx-auto max-w-screen-xl px-4 pt-4 pb-4 sm:px-6 lg:px-8">
@@ -46,7 +48,6 @@ export default function AllLinks() {
                                         <td>
                                             <div id="block" className="justify-center text-center bg-[#08090a]" data-index="" data-position="">
                                                 <div className="lg:flex lg:justify-center">
-                                                {/* <div className="row card ms-1 me-1 bg-red-200 lg:w-2/4" id="background" */}
                                                     <div className={`row card ms-1 me-1 lg:w-2/4 bg-green-100`} id="background"
                                                         style={{
                                                             'animationDuration': '2s',
@@ -55,6 +56,9 @@ export default function AllLinks() {
                                                         }}>
                                                         <div className="flex align-center justify-between"
                                                             style={{'paddingLeft': '4px', 'paddingRight': '4px'}}>
+                                                            {/* !!! */}
+                                                            {/* Задать базовые стили для div для отображение img */}
+                                                            {/* !!! */}
                                                             <div className="col-span-1 flex items-center flex-none">
                                                                 {link.img_src && <img className="mt-1 mb-1"
                                                                     src={`http://localhost/${link.img_src}`}
@@ -64,10 +68,6 @@ export default function AllLinks() {
                                                                     src={link.img_href}
                                                                     id="avatar-user"
                                                                     style={{'width':'50px', 'borderRadius': '10px'}} />}   
-                                                                {/* {!link.gif && !link.viewThumbnail && <img className="mt-1 mb-1"
-                                                                    src={link.gif}
-                                                                    id="avatar-user"
-                                                                    style={{'width':'50px', 'borderRadius': '10px'}} /> }        */}
                                                             </div>
                                                             <button type="submit"
                                                                     style={{

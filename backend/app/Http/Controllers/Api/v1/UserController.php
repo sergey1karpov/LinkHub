@@ -8,6 +8,12 @@ use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
+    /**
+     * Get current user
+     *
+     * @param User $user
+     * @return JsonResponse
+     */
     public function getUser(User $user): JsonResponse
     {
         return response()->json($user);

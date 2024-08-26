@@ -4,11 +4,11 @@ import axios from "axios";
 import { Link } from "react-router-dom"
 
 export default function Login() {
-    const [emailOrUsername, setEmailOrUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [errors, setErrors] = useState([])
-    const [authError, setAuthError] = useState('')
-    const navigate = useNavigate();
+    const [emailOrUsername, setEmailOrUsername] = useState('') //Начальное состояние для username или email = ''
+    const [password, setPassword] = useState('') //Начальное состояние для пароля ''
+    const [errors, setErrors] = useState([]) //Начальное состояние для валидационных ошибок = []
+    const [authError, setAuthError] = useState('') //Начальное состояние для ошибки авторизации('User not found' и 'Invalid password')
+    const navigate = useNavigate(); //Редирект
 
     async function handleLogin(event) {
         event.preventDefault()
@@ -16,22 +16,23 @@ export default function Login() {
         let data = {emailOrUsername, password}
 
         try {
-            const result = await axios.post('http://localhost/api/login', data);
+            const result = await axios.post('http://localhost/api/login', data); //Отправляем данные на сервер
 
+            //После логина записываем ответ от сервера в localStorage
             localStorage.setItem('chrry-userId', result.data.userId)
             localStorage.setItem('chrry-username', result.data.username)
             localStorage.setItem('chrry-api-token', result.data.token)
 
-            navigate(`/profile/dashboard`); 
+            navigate(`/profile/dashboard`); //Редиректим в личный кабинет
         } catch (error) {
-            console.log(error)
             setErrors(error.response.data.errors);
-            if(error.response.data['error']) {
-                setAuthError(error.response.data['error'])
+            if(error.response.data['error']) { //Бекенд в 'error' записывает свои ошибки 'User not found' и 'Invalid password'
+                setAuthError(error.response.data['error']) //Записываем эти ошибки в переменную authError через сеттер setAuthError
             }
         }
     }
 
+    //Ошибки валидации данных, если они есть, кроме ошибок авторизации пользователя 'User not found' и 'Invalid password'
     const renderErrors = (field) => (
         errors?.[field]?.map((error, index) => (
             <div key={index} className="text-rose-500 mb-1 rounded bg-danger">
@@ -49,6 +50,7 @@ export default function Login() {
 
             <div>
                 {
+                    //Если есть одна ошибка из 'User not found' и 'Invalid password', то выводим ее над формой
                     authError && <div className="text-rose-500 mb-1 rounded bg-danger">Sorry, {authError}</div>
                 }
             </div>

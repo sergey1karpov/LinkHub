@@ -1,24 +1,25 @@
 import { useState, useEffect } from "react"
-import GiphyInput from "./GiphyInput"
-import axios from "axios";
-import LinkDemo from "./LinkDemo";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+import GiphyInput from "./GiphyInput"
+import LinkDemo from "./LinkDemo";
 
 export default function EditLink() {
-    const params = useParams()
+    const params = useParams() //useParams возвращает все параметры маршрута, в params записываем их
 
-    const [linkText, setLinkText] = useState('')
-    const [linkUrl, setLinkUrl] = useState('')
-    const [linkContent, setLinkContent] = useState('')
-    const [img, setImg] = useState('')
-    const [viewThumbnail, setViewThumbnail] = useState('')
-    const [giphy, setGiphy] = useState('')
-    const [errors, setErrors] = useState([])
+    const [linkText, setLinkText] = useState('') //Текст ссылки
+    const [linkUrl, setLinkUrl] = useState('') //Ссылка
+    const [linkContent, setLinkContent] = useState('') //Доб контент если есть
+    const [img, setImg] = useState('') //Загружаемое изображение
+    const [viewThumbnail, setViewThumbnail] = useState('') //Превью загружаемого изображения(НЕ сохранияем в бд)
+    const [giphy, setGiphy] = useState('') //Гифка с giphy.com
+    const [errors, setErrors] = useState([]) //Ошибки валидации если есть
 
-    const [currentImg, setCurrentImg] = useState('')
+    const [isLinkAdded, setIsLinkAdded] = useState(false) //Маркер об успешном изменении ссылки
+
+    //Получаем тукущие изображение и гифку, если они есть у редактируемой ссылки
+    const [currentImg, setCurrentImg] = useState('') 
     const [currentGiphy, setCurrentGiphy] = useState('')
-
-    const [isLinkAdded, setIsLinkAdded] = useState(false)
 
     const config = {
         headers: {
@@ -28,6 +29,7 @@ export default function EditLink() {
         }
     }
 
+    //Ошибки валидации
     const renderErrors = (field) => (
         errors?.[field]?.map((error, index) => (
             <div key={index} className="text-gray-100 bg-red-400 mt-2 rounded bg-danger">
@@ -36,6 +38,7 @@ export default function EditLink() {
         ))
     )
 
+    //Создание превью картинки для демо ссылки
     function handleResizeImage(event) {
         const file = event.target.files[0]
 
@@ -51,6 +54,7 @@ export default function EditLink() {
         event.target.value = ''
     }
 
+    //Изменение ссылки
     async function handleEditLink(event) {
         event.preventDefault()
 
@@ -58,102 +62,73 @@ export default function EditLink() {
         data.append("link_text", linkText)
         data.append("link_url", linkUrl)
         data.append("link_content", linkContent ? linkContent : '')
+
+        //Если загружена гифка с giphy.com
         if (giphy) {
-            data.append("img_href", giphy)
+            data.append("img_href", giphy) //Устанавливаем гифку в data
+
+            //Отправляем запрос на сервер с удалением img, если она есть, так img и giphy не могут быть вместе. Либо то, либо это
             const clearData = new FormData()
             await axios.post(`http://localhost/api/profile/${params.link}/clear-image`, clearData, config)
                 .then((response) => {
                     console.log(response)
                 })
                 .catch((error) => {
-                    console.log(errors)
+                    console.log(error)
                 })
         }
+
+        //Если загружено изображение
         if (img) {
             data.append("img_src", img)
+
+            //Отправляем запрос на удаление гифки с giphy.com
             const clearData = new FormData()
             await axios.post(`http://localhost/api/profile/${params.link}/clear-giphy`, clearData, config)
                 .then((response) => {
                     console.log(response)
                 })
                 .catch((error) => {
-                    console.log(errors)
+                    console.log(error)
                 })
         }
 
         try {
+            //Выполняем сам запрос с отправкой данных на сервер
             await axios.post(`http://localhost/api/profile/${params.link}/edit-link`, data, config)
                 .then((response) => {
-                    console.log(response)
+
+                    //Если запрос успешен, ставим маркер обновления
+                    //!!!
+                    //Переименовать, тк added это добавление = унифицировать
+                    //!!!
                     if(response.status == 201) {
                         setIsLinkAdded(true)
                     }
-                    setImg(img)
-                    setGiphy(giphy)
+                    setImg(img) //Устанавливаем изображение в img, если есть
+                    setGiphy(giphy) //Устанавливаем gif в giphy, если есть
                 })
                 .catch((error) => {
                     setErrors(error.response.data.errors)
                     setImg('')
                     setGiphy('')
-                    console.log(errors)
                 })
         } catch (error) {
             setErrors(error.response.data.errors);
         }
     }
-    // function handleEditLink(event) {
-    //     event.preventDefault()
 
-    //     const data = {
-    //         link_text: linkText,
-    //         link_url: linkUrl,
-    //         link_content: linkContent || '',
-    //         img_src: img || null,
-    //         img_href: giphy || ''
-    //     }
-
-    //     try {
-    //         fetch(`http://localhost/api/profile/${params.link}/edit-link` , {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Authorization': `Bearer ${localStorage.getItem('chrry-api-token')}`,
-    //                 'content-type': 'multipart/form-data',
-    //                 'Accept': 'application/json',
-    //                 'Access-Control-Allow-Origin': '*',
-    //                 'Access-Control-Allow-Methods': '*',
-    //                 'Access-Control-Allow-Headers':' Origin, Content-Type, Accept, Authorization, X-Request-With',
-    //                 'Access-Control-Allow-Credentials':' true'
-    //             },
-    //             body: JSON.stringify(data)
-    //         })
-    //         .then((response) => {
-    //             console.log(response)
-    //             if(response.status == 201) {
-    //                 setIsLinkAdded(true)
-    //             }
-    //             setImg(img)
-    //             setGiphy(giphy)
-    //         })
-    //         .catch((error) => {
-    //             setErrors(error.response.data.errors)
-    //             setImg('')
-    //             setGiphy('')
-    //             console.log(errors)
-    //         })
-    //     } catch(error) {
-    //         setErrors(error.response.data.errors);
-    //     }
-    // }
-
+    //Во время рендера компонента делаем get запрос на сервер и получаем ссылку, которую хотим редактировать
     useEffect(() => {
         try {
             axios.get(`http://localhost/api/profile/link/${params.link}`, config)
                 .then((response) => {
-                    setLinkText(response.data[0].link_text)
-                    setLinkUrl(response.data[0].link_url)
-                    setLinkContent(response.data[0].link_content)
-                    setCurrentImg(response.data[0].img_src)
-                    setCurrentGiphy(response.data[0].img_href)
+                    //Устанвливаем данные для превью ссылки
+                    setLinkText(response.data[0].link_text) //Ставим текст ссылки
+                    setLinkUrl(response.data[0].link_url) //Ставим ссылку
+                    setLinkContent(response.data[0].link_content) //Доп контент если есть
+                    setCurrentImg(response.data[0].img_src) //Текущая картинка если есть
+                    setCurrentGiphy(response.data[0].img_href) //Текущая гифка если есть
                 })
                 .catch((err) => console.log(err))
         } catch (error) {
@@ -163,22 +138,26 @@ export default function EditLink() {
 
     return (
         <>
+            {/* Компонент отрисовки превью созданной ссылки, того как она будет выглядеть после создания */}
             <LinkDemo 
-                isLinkAdded={isLinkAdded} 
-                setIsLinkAdded={setIsLinkAdded}
-                img={img} 
-                title={linkText} 
-                linkUrl={linkUrl}
-                viewThumbnail={viewThumbnail} 
-                setViewThumbnail={setViewThumbnail} 
-                giphy={giphy} 
-                setGiphy={setGiphy}
-                currentImg={currentImg}
-                currentGiphy={currentGiphy}
-                setCurrentImg={setCurrentImg}
-                setCurrentGiphy={setCurrentGiphy}
-                setImg={setImg}
-                alertText={'Updated!'}
+                isLinkAdded={isLinkAdded} //Маркер что ссылка добавлена
+                setIsLinkAdded={setIsLinkAdded} //Сеттер для маркера что ссылка добавлена
+                alertText={'Updated!'} //Текс для маркера об успешном добавлении ссылки
+
+                title={linkText} //Текст ссылки
+                linkUrl={linkUrl} //Сама ссылка
+                //Контент?
+                img={img} //Загруженное изображение
+                setImg={setImg} //Сеттер для загруженного изображения
+                viewThumbnail={viewThumbnail} //Превью загруженного изображения
+                setViewThumbnail={setViewThumbnail} //Сеттер для превью загруженного изображения
+                giphy={giphy} //Гифка с giphy
+                setGiphy={setGiphy} //Сеттер для giphy
+
+                currentImg={currentImg} //Текущее загруженное изображение
+                setCurrentImg={setCurrentImg} //Сеттер для текущего загруженного изображения
+                currentGiphy={currentGiphy} //Текущая гифка с giphy.com
+                setCurrentGiphy={setCurrentGiphy} //Сеттер для текущей гифки с giphy.com
             />
             <div className="max-w-full mx-auto pl-2 pr-2 mb-5 bg-[#08090a]"> 
                 <div className="max-w-screen-xl mx-auto pl-2 pr-2 mb-5 bg-[#08090a]">  
@@ -225,9 +204,10 @@ export default function EditLink() {
                                 </div>
                                 <input 
                                     onChange={(e) => {
-                                        handleResizeImage(e)
-                                        setGiphy('')
-                                        setImg('')
+                                        handleResizeImage(e) //Функция обработчик загружаемого изображения
+                                        
+                                        //После загрузки изображения очищаем giphy, текущую giphy и текущее изображение
+                                        setGiphy('') 
                                         setCurrentImg('')
                                         setCurrentGiphy('')
                                     }}  
@@ -239,12 +219,13 @@ export default function EditLink() {
                             </label>
                         </div>  
 
+                        {/* Компонент инпута поиска и подгрузки гиф с сервиса giphy.com */}
                         <GiphyInput 
-                            setCurrentImg={setCurrentImg} 
-                            setCurrentGiphy={setCurrentGiphy} 
-                            setViewThumbnail={setViewThumbnail} 
-                            setGiphy={setGiphy}
-                            setImg={setImg}
+                            setCurrentImg={setCurrentImg} //Сеттер текущей загружаемого изображения
+                            setCurrentGiphy={setCurrentGiphy} //Сеттер текущей гифки с giphy.com
+                            setViewThumbnail={setViewThumbnail} //Сеттер превью загружаемого изображения
+                            setGiphy={setGiphy} //Сеттер для giphy.com
+                            setImg={setImg} //Сеттер для загружаемого изображения
                         />
 
                         <div className="text-center">

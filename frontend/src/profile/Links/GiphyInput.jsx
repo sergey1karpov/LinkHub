@@ -2,53 +2,36 @@ import { useRef, useState } from "react"
 import { GiphyFetch } from '@giphy/js-fetch-api'
 
 export default function GiphyInput(props) {
-    const [searchTerm, setSearchTerm] = useState('')
+    const [searchGif, setSearchGif] = useState('')
     const [gifs, setGifs] = useState([])
     const [page, setPage] = useState(0)
 
-    const gifInputRef = useRef()
+    const gifInputRef = useRef() //Ссылка на поле ввода для giphy <textarea>
 
+    //!!!
+    //Вынести в env
+    //!!!
     const gf = new GiphyFetch('BZ0VqcrcHsB6zJ6o4cCek2a9Hqy34JFJ')
 
+    //Функция подгрузки giphy c giphy.com
     async function loadGifs(term, page) {
-        const {data} = await gf.search(term, {limit:10, offset: page * 10})
-        setGifs((prevGifs) => [...prevGifs, ...data])
+        const {data} = await gf.search(term, {limit:10, offset: page * 10}) //Получаем данные {10 записей и кол-во сколько: стр * 10}
+        setGifs((prevGifs) => [...prevGifs, ...data]) //Записываем их в gifs через сеттер
     }
 
-    function handleSearch(term) {
-        if(!term) {
-            setGifs([])
-            setPage(0)
-            return
-        }
-
-        setPage(0)
-        setGifs([])
-        loadGifs(term, 0)
-    }
-
+    //Подшрузка еще giphy
     function handleLoadMore(event) {
         event.preventDefault()
-        const nextPage = page + 1
-        setPage(nextPage)
-        loadGifs(searchTerm, nextPage)
+        const nextPage = page + 1 //nextPage = текущая стр + 1
+        setPage(nextPage) //Установка новой страницы
+        loadGifs(searchGif, nextPage) //Вызываем функцию подшрузки с искомой частью, которую установили в handleInputChange и страницей
     }
 
+    //Обработчик поля ввода
     function handleInputChange(event) {
-        const term = event.target.value
-        setSearchTerm(term)
-        handleSearch(term)
-    }
-
-    function handleGifClick(gifUrl) {
-        // handleGifSelect(gifUrl)
-        setGifs([])
-        gifInputRef.current.value = gifUrl
-        //Уст в пропс
-        props.setGiphy(gifUrl)
-
-        // console.log(gifInputRef.current)
-        gifInputRef.current.value = searchTerm
+        const term = event.target.value //Часть слова по которой ищем gif. Напр.: 'Micky mo...'
+        setSearchGif(term) //Устанавливаем искомую часть гифки в состояние searchGif
+        loadGifs(term, 0) //Передаем искомую часть гифки в функцию loadGifs
     }
 
     return (
@@ -77,17 +60,23 @@ export default function GiphyInput(props) {
                                 src={gif.images.fixed_height.url}
                                 alt={gif.title}
                                 onClick={() => {
-                                    handleGifClick(gif.images.original.url)
-                                    props.setViewThumbnail('')
-                                    props.setCurrentImg('')
-                                    props.setCurrentGiphy('')
-                                    props.setImg('')
+                                    props.setGiphy(gif.images.original.url)  //Устанавливаем в giphy url выбранной гифки
+                                    props.setViewThumbnail('') //Очищаем превью изображения если есть
+                                    setGifs([]) //Очищаем все подгруженные гифки
+
+                                    //Часть отрабатывает при обновлении ссылки
+                                    if(props.setCurrentImg) {
+                                        props.setCurrentImg('')
+                                        props.setCurrentGiphy('')
+                                        props.setImg('')
+                                    }
                                 }}
                                 style={{ cursor: 'pointer' }}
                             />
                         </div>
                     ))}
                 </div>
+                {/* Кнопка подгрузки еще 10 giphy */}
                 {gifs.length > 0 && (
                     <button onClick={(e) => handleLoadMore(e)} className="mt-2 w-full px-4 py-2 bg-gray-100 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
                         <img className="w-20 h-7" src="https://upload.wikimedia.org/wikipedia/commons/8/82/Giphy-logo.svg" loading="lazy" alt="google logo" />
