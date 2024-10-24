@@ -1,9 +1,16 @@
 import { Link, NavLink } from "react-router-dom"
 import AuthUserContext from '../contexts/AuthUserContext';
 import { useContext } from "react";
+import axios from "axios";
+import config from "../config";
 
 //Выход, очищаем localStorage и редиректим на главную
-function Logout() {
+async function Logout() {
+
+    await axios.post(`${config.BACKEND_API_URL}/logout`)
+        .then((response) => console.log(response.data))
+        .catch((err) => console.log(err))
+
     localStorage.removeItem('chrry-userId')
     localStorage.removeItem('chrry-username')
     localStorage.removeItem('chrry-api-token')
@@ -25,7 +32,7 @@ export default function Header() {
         <nav className="bg-[#08090a] border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <NavLink to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-                    <img width={`100px`} height={`100px`} src="https://i.ibb.co/kQdGDSs/logosize.png" />
+                    <img width={`100px`} height={`100px`} src="https://i.ibb.co/PxFfD29/lhb.png" />
                 </NavLink>
                 <button data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                     <span className="sr-only">Open main menu</span>

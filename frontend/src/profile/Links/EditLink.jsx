@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import GiphyInput from "./GiphyInput"
 import LinkDemo from "./LinkDemo";
+import config from "../../config";
 
 export default function EditLink() {
     const params = useParams() //useParams возвращает все параметры маршрута, в params записываем их
@@ -20,14 +21,6 @@ export default function EditLink() {
     //Получаем тукущие изображение и гифку, если они есть у редактируемой ссылки
     const [currentImg, setCurrentImg] = useState('') 
     const [currentGiphy, setCurrentGiphy] = useState('')
-
-    const config = {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('chrry-api-token')}`,
-            'content-type': 'multipart/form-data',
-            'Accept': 'application/json'
-        }
-    }
 
     //Ошибки валидации
     const renderErrors = (field) => (
@@ -69,7 +62,7 @@ export default function EditLink() {
 
             //Отправляем запрос на сервер с удалением img, если она есть, так img и giphy не могут быть вместе. Либо то, либо это
             const clearData = new FormData()
-            await axios.post(`http://localhost/api/profile/${params.link}/clear-image`, clearData, config)
+            await axios.post(`${config.BACKEND_API_URL}/profile/${params.link}/clear-image`, clearData)
                 .then((response) => {
                     console.log(response)
                 })
@@ -84,7 +77,7 @@ export default function EditLink() {
 
             //Отправляем запрос на удаление гифки с giphy.com
             const clearData = new FormData()
-            await axios.post(`http://localhost/api/profile/${params.link}/clear-giphy`, clearData, config)
+            await axios.post(`${config.BACKEND_API_URL}/profile/${params.link}/clear-giphy`, clearData)
                 .then((response) => {
                     console.log(response)
                 })
@@ -95,7 +88,7 @@ export default function EditLink() {
 
         try {
             //Выполняем сам запрос с отправкой данных на сервер
-            await axios.post(`http://localhost/api/profile/${params.link}/edit-link`, data, config)
+            await axios.post(`${config.BACKEND_API_URL}/profile/${params.link}/edit-link`, data)
                 .then((response) => {
 
                     //Если запрос успешен, ставим маркер обновления
@@ -121,14 +114,14 @@ export default function EditLink() {
     //Во время рендера компонента делаем get запрос на сервер и получаем ссылку, которую хотим редактировать
     useEffect(() => {
         try {
-            axios.get(`http://localhost/api/profile/link/${params.link}`, config)
+            axios.get(`${config.BACKEND_API_URL}/profile/link/${params.link}`)
                 .then((response) => {
                     //Устанвливаем данные для превью ссылки
-                    setLinkText(response.data[0].link_text) //Ставим текст ссылки
-                    setLinkUrl(response.data[0].link_url) //Ставим ссылку
-                    setLinkContent(response.data[0].link_content) //Доп контент если есть
-                    setCurrentImg(response.data[0].img_src) //Текущая картинка если есть
-                    setCurrentGiphy(response.data[0].img_href) //Текущая гифка если есть
+                    setLinkText(response.data.data.link_text) //Ставим текст ссылки
+                    setLinkUrl(response.data.data.link_url) //Ставим ссылку
+                    setLinkContent(response.data.data.link_content) //Доп контент если есть
+                    setCurrentImg(response.data.data.img_src) //Текущая картинка если есть
+                    setCurrentGiphy(response.data.data.img_href) //Текущая гифка если есть
                 })
                 .catch((err) => console.log(err))
         } catch (error) {

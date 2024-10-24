@@ -68,4 +68,11 @@ class UserAuthController extends Controller
             'token' => $user->createToken("Bearer TOKEN")->plainTextToken
         ]);
     }
+
+    public function logout(): JsonResponse
+    {
+        auth()->user()->tokens()->delete();
+
+        return response()->json('Bye');
+    }
 }

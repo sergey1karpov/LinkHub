@@ -1,5 +1,6 @@
 import { useState } from "react"
 import axios from "axios";
+import config from "../../config";
 
 //Компонент восставновления пароля
 export default function RestorePassword() {
@@ -26,7 +27,7 @@ export default function RestorePassword() {
         event.preventDefault()
 
         try {
-            const result = await axios.post('http://localhost/api/restore-password', {email});
+            const result = await axios.post(`${config.BACKEND_API_URL}/restore-password`, {email});
 
             //Если после отправки данных получаем от сервера код 200, то showAllert устанавливаем в true и отображаем его
             if (result.status === 200) {
@@ -41,7 +42,7 @@ export default function RestorePassword() {
         <>
             <div className="m-4">  
                 <h1 className="mb-4 text-4xl font-extrabold text-gray-200 dark:text-white md:text-5xl lg:text-6xl">
-                    <img width={`450px`} height={`450px`} src="https://i.ibb.co/kQdGDSs/logosize.png" />
+                    <img width={`450px`} height={`450px`} src="https://i.ibb.co/PxFfD29/lhb.png" />
                         Restore your password
                 </h1>
 

@@ -12,6 +12,7 @@ Route::post('/restore-password', [RestorePasswordController::class, 'restorePass
 Route::post('/change-password', [RestorePasswordController::class, 'changePassword'])->name('changePassword');
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
     Route::prefix('/profile')->group(function () {
         Route::get('/{user}', [UserController::class, 'getUser'])->name('getUser');
 
@@ -19,6 +20,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/link/{link}', [LinkController::class, 'getLink'])->name('getLink');
         Route::get('/{user}/all-links', [LinkController::class, 'allLinks'])->name('allLinks');
         Route::post('/{link}/edit-link', [LinkController::class, 'editLink'])->name('editLink');
+        Route::post('/{user}/change-position', [LinkController::class, 'changePosition'])->name('changePosition');
         Route::post('/{link}/delete-image', [LinkController::class, 'deleteImage'])->name('deleteImage');
         Route::post('/{link}/clear-image', [LinkController::class, 'clearImage'])->name('clearImage');
         Route::post('/{link}/clear-giphy', [LinkController::class, 'clearGiphy'])->name('clearGiphy');

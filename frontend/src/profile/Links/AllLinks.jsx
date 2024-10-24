@@ -1,23 +1,71 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from "axios";
+import Sortable from "sortablejs";
+import config from "../../config";
 
 export default function AllLinks() {
     const [links, setLinks] = useState([]) //Состояние для ссылок, по дефолту пустой массив
-
-    const config = {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('chrry-api-token')}`,
-            'content-type': 'multipart/form-data',
-            'Accept': 'application/json'
-        }
-    }
+    const navigate = useNavigate() //Для редиректа
+    const back = useLocation();
 
     //Удаление ссылки
     async function handleDeleteLink(event, linkId) {
         event.preventDefault()
         try {
-            await axios.delete(`http://localhost/api/profile/${linkId}/delete-link`, config)
+            await axios.delete(`${config.BACKEND_API_URL}/profile/${linkId}/delete-link`)
+                .then((response) => console.log(response.data))
+                .catch((err) => console.log(err))
+        } catch (error) {
+            console.log(error)
+        }
+
+        navigate(back.pathname)
+    }
+
+    //При отрисовки компонента делаем запрос на сервер для получения всех ссылок юзера
+    useEffect(() => {
+        try {
+            axios.get(`${config.BACKEND_API_URL}/profile/${localStorage.getItem('chrry-userId')}/all-links`)
+                .then((response) => setLinks(response.data.data)) //Устанавливаем полученные ссылки в links
+                .catch((err) => console.log(err))
+        } catch (error) {
+            console.log(error)
+        }
+    }, [links])
+
+    useEffect(() => {
+        if (links.length === 0) {
+            return
+        } else {
+            const sortable = Sortable.create(document.getElementById('sortable-container'), {
+                handle: '#up',
+                animation: 150,
+                onEnd: function(event) {
+                    const updatedLinks = [...links] //Копируем все ссылки по текущей позиции
+                    const [movedLink] = updatedLinks.splice(event.oldIndex, 1) //Берем ссылку которую двигаем
+                    updatedLinks.splice(event.newIndex, 0, movedLink) //Обновляем ссылки с новыми позициями
+                    
+                    updatedLinks.forEach((link, index) => {
+                        link.position = index + 1
+                    })
+
+                    setLinks(updatedLinks)
+                    saveNewPositions(updatedLinks)
+                }    
+            })
+        }
+    }, [links])
+
+    async function saveNewPositions(updatedLinks) {
+        const newPositions = updatedLinks.map(link => ({
+            id: link.id,
+            position: link.position
+        }))
+
+        try {
+            await axios.post(`${config.BACKEND_API_URL}/profile/${localStorage.getItem('chrry-userId')}/change-position`, {data: newPositions})
                 .then((response) => console.log(response.data))
                 .catch((err) => console.log(err))
         } catch (error) {
@@ -25,19 +73,8 @@ export default function AllLinks() {
         }
     }
 
-    //При отрисовки компонента делаем запрос на сервер для получения всех ссылок юзера
-    useEffect(() => {
-        try {
-            axios.get(`http://localhost/api/profile/${localStorage.getItem('chrry-userId')}/all-links`, config)
-                .then((response) => setLinks(response.data)) //Устанавливаем полученные ссылки в links
-                .catch((err) => console.log(err))
-        } catch (error) {
-            console.log(error)
-        }
-    }, [links])
-
     return (
-        <div className="mt-24">
+        <div className="mt-24" id="sortable-container">
             {links && links.map((link) => { {/*Итерация по ссылкам через map js */}
                 return (
                     <div key={link.id} className="max-w-full mx-auto pl-2 pr-2 bg-[#08090a]"> 
@@ -100,7 +137,7 @@ export default function AllLinks() {
                                                     </div>
                                                 </div>
                                                 <div className="inline-flex rounded-md shadow-sm mt-2" role="group">
-                                                    <button type="button" className="px-4 py-2 text-sm font-medium text-gray-900 bg-white rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                                                    <button id="up" type="button" className="px-4 py-2 text-sm font-medium text-gray-900 bg-white rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
                                                         <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4"/>
                                                         </svg>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import config from "../../config";
 
 //Компонент превью ссылки
 export default function LinkDemo(props) {
@@ -16,19 +17,11 @@ export default function LinkDemo(props) {
         if(props.currentImg || props.currentGiphy || props.img || props.giphy) {
             event.preventDefault()
 
-            const config = {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('chrry-api-token')}`,
-                    'content-type': 'multipart/form-data',
-                    'Accept': 'application/json'
-                }
-            }
-
             let data = new FormData()
 
             try {
                 //Делаем запрос на сервер с удалением из ссылки img и giphy
-                await axios.post(`http://localhost/api/profile/${params.link}/delete-image`, data, config)
+                await axios.post(`${config.BACKEND_API_URL}/profile/${params.link}/delete-image`, data)
                     .then(() => {
                         //Очищаем все
                         props.setCurrentImg('')

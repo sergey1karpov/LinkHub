@@ -4,8 +4,8 @@ import { NavLink } from "react-router-dom"
 export default function Index() {
     return (
         <div className="m-4">  
-            <h1 className="mb-4 text-4xl font-extrabold text-gray-200 dark:text-white md:text-5xl lg:text-6xl">
-                <img width={`450px`} height={`450px`} src="https://i.ibb.co/kQdGDSs/logosize.png" />
+            <h1 className="mb-10 text-4xl font-extrabold text-gray-200 dark:text-white md:text-5xl lg:text-6xl">
+                <img className="mb-4" width={`450px`} height={`450px`} src="https://i.ibb.co/PxFfD29/lhb.png" />
                     Put all your links in one place
             </h1>
             <div className="text-lg font-normal text-gray-200 lg:text-xl dark:text-gray-400">

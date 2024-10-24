@@ -3,6 +3,7 @@ import axios from "axios";
 import LinkDemo from "./LinkDemo";
 import GiphyInput from "./GiphyInput"
 import AuthUserContext from "../../contexts/AuthUserContext"
+import config from "../../config";
 
 export default function AddLink() {
     const authUserData = useContext(AuthUserContext) //Подключаем контекст
@@ -55,16 +56,8 @@ export default function AddLink() {
         data.append("img_href", giphy)
         data.append("user_id", authUserData.id)
 
-        const config = {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('chrry-api-token')}`,
-                'content-type': 'multipart/form-data',
-                'Accept': 'application/json'
-            }
-        }
-
         try {
-            await axios.post(`http://localhost/api/profile/${localStorage.getItem('chrry-userId')}/add-link`, data, config)
+            await axios.post(`${config.BACKEND_API_URL}/profile/${localStorage.getItem('chrry-userId')}/add-link`, data)
                 .then((response) => {
                     //После успешной отправки данных очищаем поля формы
                     setLinkText('')
@@ -163,7 +156,7 @@ export default function AddLink() {
                         {/* В компонент передаем 2 пропса: setViewThumbnail - установка изображения в превью, setGiphy - установка гифки */}
                         {/* Если у нас установлена картинка, то в превью отображается viewThumbnail, далее хотим заменить картинку на гифку с сервиса
                         и при выборе этой гифки мы очищаем viewThumbnail через setViewThumbnail и устанавливаем гифку setGiphy*/}
-                        <GiphyInput setViewThumbnail={setViewThumbnail} setGiphy={setGiphy}/>
+                        <GiphyInput setViewThumbnail={setViewThumbnail} setGiphy={setGiphy} setImg={setImg}/>
 
                         <div className="text-center">
                             <div className="text-lg font-normal text-gray-200 lg:text-xl dark:text-gray-400">

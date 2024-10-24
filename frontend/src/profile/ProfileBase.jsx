@@ -1,11 +1,43 @@
-import AuthUserContext from '../contexts/AuthUserContext';
-import { useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Outlet } from "react-router-dom"
+import Wait from './Wait';
+import axios from "axios";
+import config from "../config";
+import { useNavigate } from 'react-router-dom';
 
 //Базовый компонент профиля
 export default function ProfileBase() {
-    const authUserData = useContext(AuthUserContext) //Подключаем контекст
-    
+    const [userData, setUserData] = useState({})
+    const [isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate();
+
+    useEffect(function () {
+        async function getUser() {
+            setIsLoading(true)
+            try {
+                await axios.get(`${config.BACKEND_API_URL}/profile/${localStorage.getItem('chrry-userId')}`)
+                    .then((response) => {
+                        setUserData(response.data)
+                    })
+                    .catch((error) => {
+                        if(error.response.status === 401) {
+                            navigate("/")
+                        }
+                        console.log(error)
+                    })
+                setIsLoading(false)    
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        getUser()
+    }, [])
+
+    if(isLoading) {
+        return <Wait />
+    }
+
     return (
         <>
             <nav className="bg-[#08090a] border-gray-200 dark:bg-gray-900 fixed w-full z-20 top-0 start-0">
@@ -17,7 +49,7 @@ export default function ProfileBase() {
                         <button type="submit" className="relative">
                             <span className="absolute top-0 left-0 mt-2 ml-2 h-full w-full rounded bg-gray-400"></span>
                             <span className="fold-bold relative inline-block h-full w-full rounded border-2 border-gray-100 bg-black px-7 py-3 text-2xl font-bold text-white transition duration-100 hover:bg-black hover:text-yellow-500">
-                                {`@${authUserData.slug}`}
+                                {userData.username}
                             </span>
                         </button>
                     </div>

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import axios from "axios";
+import config from "../../config";
 
 //Компонент смены пароля
 export default function EditPassword() {
@@ -42,7 +43,7 @@ export default function EditPassword() {
 
         try {
             //Отправляем на сервер пароль, его дубль, токен и вренную точку
-            const result = await axios.post(`http://localhost/api/change-password`, {password, repeatPassword, token, timeToClickLink});
+            const result = await axios.post(`${config.BACKEND_API_URL}/change-password`, {password, repeatPassword, token, timeToClickLink});
             if(result.data) { //Если в ответе все будет ok, устанавливаем showAllert в true
                 setShowAllert(true)
             }
@@ -60,7 +61,7 @@ export default function EditPassword() {
     return (
         <div className="m-4"> 
             <h1 className="mb-4 text-4xl font-extrabold text-gray-200 dark:text-white md:text-5xl lg:text-6xl">
-                <img width={`450px`} height={`450px`} src="https://i.ibb.co/kQdGDSs/logosize.png" />
+                <img width={`450px`} height={`450px`} src="https://i.ibb.co/PxFfD29/lhb.png" />
                     Enter your new pass
             </h1>
 

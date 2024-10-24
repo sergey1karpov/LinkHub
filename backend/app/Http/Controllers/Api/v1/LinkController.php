@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LinkRequest;
 use App\Http\Requests\EditLinkRequest;
+use App\Http\Resources\LinkResource;
 use App\Http\Services\ImageSaveService;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 
 class LinkController extends Controller
 {
@@ -23,6 +27,11 @@ class LinkController extends Controller
      */
     public function addLink (User $user, LinkRequest $request): JsonResponse
     {
+        /**
+         * Increment link positions before create new link
+         */
+        DB::table('links')->increment('position');
+
         $user->links()->create([
             'link_text' => $request->link_text,
             'link_url' => $request->link_url,
@@ -31,6 +40,7 @@ class LinkController extends Controller
                 $this->imageSaveService->saveImage($request->img_src) :
                 null,
             'img_href' => $request->img_href,
+            'position' => 1
         ]);
 
         return response()->json(['message' => 'Link added successfully.'], 201);
@@ -40,22 +50,22 @@ class LinkController extends Controller
      * Get link
      *
      * @param Link $link
-     * @return JsonResponse
+     * @return LinkResource
      */
-    public function getLink(Link $link): JsonResponse
+    public function getLink(Link $link): LinkResource
     {
-        return response()->json([$link]);
+        return new LinkResource($link);
     }
 
     /**
      * Get all user links
      *
      * @param User $user
-     * @return JsonResponse
+     * @return AnonymousResourceCollection
      */
-    public function allLinks(User $user): JsonResponse
+    public function allLinks(User $user): AnonymousResourceCollection
     {
-        return response()->json($user->links);
+        return LinkResource::collection($user->links);
     }
 
     /**
@@ -139,8 +149,14 @@ class LinkController extends Controller
         return response()->json(['message' => 'Link deleted successfully.'], 204);
     }
 
-    public function linkPosition(Link $link): JsonResponse
+    public function changePosition(User $user, Request $request): JsonResponse
     {
+        foreach($request->data as $link) {
+            Link::where('user_id', $user->id)
+                ->where('id', $link['id'])
+                ->update(['position' => $link['position']]);
+        }
 
+        return response()->json(['message' => 'Position changed!'], 201);
     }
 }

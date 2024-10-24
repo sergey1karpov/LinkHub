@@ -1,5 +1,6 @@
 import { useRef, useState } from "react"
 import { GiphyFetch } from '@giphy/js-fetch-api'
+import config from "../../config"
 
 export default function GiphyInput(props) {
     const [searchGif, setSearchGif] = useState('')
@@ -11,7 +12,7 @@ export default function GiphyInput(props) {
     //!!!
     //Вынести в env
     //!!!
-    const gf = new GiphyFetch('BZ0VqcrcHsB6zJ6o4cCek2a9Hqy34JFJ')
+    const gf = new GiphyFetch(config.GIPHY_APY_KEY)
 
     //Функция подгрузки giphy c giphy.com
     async function loadGifs(term, page) {
@@ -63,12 +64,11 @@ export default function GiphyInput(props) {
                                     props.setGiphy(gif.images.original.url)  //Устанавливаем в giphy url выбранной гифки
                                     props.setViewThumbnail('') //Очищаем превью изображения если есть
                                     setGifs([]) //Очищаем все подгруженные гифки
-
+                                    props.setImg('')
                                     //Часть отрабатывает при обновлении ссылки
                                     if(props.setCurrentImg) {
                                         props.setCurrentImg('')
                                         props.setCurrentGiphy('')
-                                        props.setImg('')
                                     }
                                 }}
                                 style={{ cursor: 'pointer' }}
