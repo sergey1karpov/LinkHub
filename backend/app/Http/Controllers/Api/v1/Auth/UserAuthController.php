@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\v1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Dto\UserCreateDto;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegistrationRequest;
+use App\Http\Services\UserService;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -15,18 +18,14 @@ class UserAuthController extends Controller
      * Register new user
      *
      * @param UserRegistrationRequest $request
+     * @param UserService $userService
      * @return JsonResponse
      */
-    public function registration(UserRegistrationRequest $request): JsonResponse
+    public function registration(UserRegistrationRequest $request, UserService $userService): JsonResponse
     {
-        $user = User::create([
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'username' => $request->username,
-            'slug' => $request->slug,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
+        $userDto = new UserCreateDto(...$request->all());
+
+        $user = $userService->createNewUser($userDto);
 
         return response()->json([
             'userId' => $user->id,
@@ -39,16 +38,12 @@ class UserAuthController extends Controller
      * Login user
      *
      * @param UserLoginRequest $request
+     * @param UserService $userService
      * @return JsonResponse
      */
-    public function login(UserLoginRequest $request): JsonResponse
+    public function login(UserLoginRequest $request, UserService $userService): JsonResponse
     {
-        /**
-         * Login to the service by email or username
-         */
-        $user = User::where('email', $request->emailOrUsername)
-            ->orWhere('username', $request->emailOrUsername)
-            ->first();
+        $user = $userService->getUserByEmailOrUsername($request->emailOrUsername);
 
         if(!$user) {
             return response()->json([

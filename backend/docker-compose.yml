@@ -4,6 +4,7 @@ services:
 
     #PHP Service
     app:
+        user: "www-data"
         build:
             context: .
             dockerfile: ./docker/php/Dockerfile

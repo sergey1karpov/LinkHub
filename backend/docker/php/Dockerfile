@@ -2,6 +2,16 @@ FROM php:8.3-fpm
 
 WORKDIR /var/www
 
+COPY . .
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cache
+
+RUN chown -R www-data:www-data /var/www/vendor \
+    && chmod -R 775 /var/www/vendor
+
+WORKDIR /var/www
+
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/
 

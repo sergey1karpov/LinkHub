@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 class RestorePasswordController
 {
     /**
-     * Restore password
+     * This method generate unique restore link and sent email by user
      *
      * @param RestorePasswordRequest $request
      * @return void

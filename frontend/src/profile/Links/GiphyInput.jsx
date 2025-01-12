@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { GiphyFetch } from '@giphy/js-fetch-api'
 import config from "../../config"
 
@@ -6,6 +6,11 @@ export default function GiphyInput(props) {
     const [searchGif, setSearchGif] = useState('')
     const [gifs, setGifs] = useState([])
     const [page, setPage] = useState(0)
+
+    useEffect(() => {
+        if (searchGif.trim() === "") return; // Не делать запрос, если поле пустое
+        loadGifs(searchGif, 0); // Вызываем при изменении term
+    }, [searchGif]);
 
     const gifInputRef = useRef() //Ссылка на поле ввода для giphy <textarea>
 
@@ -17,15 +22,23 @@ export default function GiphyInput(props) {
     //Функция подгрузки giphy c giphy.com
     async function loadGifs(term, page) {
         const {data} = await gf.search(term, {limit:10, offset: page * 10}) //Получаем данные {10 записей и кол-во сколько: стр * 10}
-        setGifs((prevGifs) => [...prevGifs, ...data]) //Записываем их в gifs через сеттер
+
+        //Если 0-я страница, то мы просто формируем результаты поиска
+        //Если пришел запрос на 2-ю страницу и тд, то к первому результату поиска мы добавляем все последующие результаты
+        if(page > 0) {
+            console.log(page)
+            setGifs((prevGifs) => [...prevGifs, ...data])
+            return
+        }
+        setGifs(data)
     }
 
-    //Подшрузка еще giphy
+    //Подгрузка еще giphy
     function handleLoadMore(event) {
         event.preventDefault()
         const nextPage = page + 1 //nextPage = текущая стр + 1
         setPage(nextPage) //Установка новой страницы
-        loadGifs(searchGif, nextPage) //Вызываем функцию подшрузки с искомой частью, которую установили в handleInputChange и страницей
+        loadGifs(searchGif, nextPage) //Вызываем функцию подгрузки с искомой частью, которую установили в handleInputChange и страницей
     }
 
     //Обработчик поля ввода

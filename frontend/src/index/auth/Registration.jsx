@@ -26,10 +26,11 @@ export default function Registration() {
     async function handleRegistration(event) {
         event.preventDefault() //Отменяем привычное состояние кнопки(перезагрузка при нажатии)
 
-        let data = {firstname, lastname, username, slug, email, password} //Формируем объект данных для отправки на сервер
+        let data = {firstname, lastname, username, slug, email, password} //Формируем объект данных для отправки на серве
 
         try {
-            const result = await axios.post(`${config.BACKEND_API_URL}/registration`, data); //Отправляем данные, получаем в ответ токен, юзернейм и id изера
+            //Отправляем данные, получаем в ответ токен, юзернейм и id изера
+            const result = await axios.post(`${config.BACKEND_API_URL}/registration`, data);
 
             //Полученные данные записываем в localStorage
             localStorage.setItem('chrry-userId', result.data.userId)
@@ -56,7 +57,7 @@ export default function Registration() {
     return (
         <div className="m-4">  
             <h1 className="mb-4 text-4xl font-extrabold text-gray-200 dark:text-white md:text-5xl lg:text-6xl">
-                <img width={`450px`} height={`450px`} src="https://i.ibb.co/PxFfD29/lhb.png" />
+                <img width={`450px`} height={`450px`} src="https://i.ibb.co/PxFfD29/lhb.png"  alt={`LinkHub`}/>
                     Registration for free
             </h1>
 

@@ -1,12 +1,11 @@
-import { useState, useContext } from "react"
+import {useState, useEffect} from "react"
 import axios from "axios";
 import LinkDemo from "./LinkDemo";
 import GiphyInput from "./GiphyInput"
-import AuthUserContext from "../../contexts/AuthUserContext"
 import config from "../../config";
 
 export default function AddLink() {
-    const authUserData = useContext(AuthUserContext) //Подключаем контекст
+    //const authUserData = useContext(AuthUserContext) //Подключаем контекст
 
     //LinkData
     const [linkText, setLinkText] = useState('') //Текст ссылки
@@ -18,6 +17,10 @@ export default function AddLink() {
     const [viewThumbnail, setViewThumbnail] = useState('') //Изображение которое отображается в превью ссылки, не отправляется в бд!!!
     const [errors, setErrors] = useState([]) //Валидационные ошибки если есть
     const [isLinkAdded, setIsLinkAdded] = useState(false) //Маркер что ссылка добавлена
+
+    useEffect(() => {
+        document.title = 'Create link'
+    }, [])
 
     //Рендер валидационных ошибок если есть
     const renderErrors = (field) => (
@@ -54,7 +57,7 @@ export default function AddLink() {
         data.append("link_content", linkContent)
         data.append("img_src", img)
         data.append("img_href", giphy)
-        data.append("user_id", authUserData.id)
+        data.append("user_id", localStorage.getItem('chrry-userId'))
 
         try {
             await axios.post(`${config.BACKEND_API_URL}/profile/${localStorage.getItem('chrry-userId')}/add-link`, data)
@@ -68,7 +71,7 @@ export default function AddLink() {
                     setGiphy('')
 
                     //Так же добавляем маркер что ссылка добавлена
-                    if(response.status == 201) {
+                    if(response.status === 201) {
                         setIsLinkAdded(true)
                     }
                 })
