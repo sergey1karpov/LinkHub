@@ -1,12 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Dto\LinkDto;
+use App\Http\Dto\LinkStylesDto;
 use App\Http\Requests\LinkRequest;
-use App\Http\Requests\EditLinkRequest;
 use App\Http\Resources\LinkResource;
-use App\Http\Services\ImageSaveService;
+use App\Http\Services\LinkService;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +18,9 @@ use Illuminate\Support\Facades\DB;
 
 class LinkController extends Controller
 {
-    public function __construct(private ImageSaveService $imageSaveService) {}
+    public function __construct(
+        private readonly LinkService $linkService
+    ) {}
 
     /**
      * Create new link
@@ -27,21 +31,13 @@ class LinkController extends Controller
      */
     public function addLink (User $user, LinkRequest $request): JsonResponse
     {
-        /**
-         * Increment link positions before create new link
-         */
-        DB::table('links')->increment('position');
+        $linkDto = new LinkDto(...$request->only(Link::BASE_LINK_FIELD));
+        $linkStylesDto = new LinkStylesDto(...$request->except(Link::BASE_LINK_FIELD));
 
-        $user->links()->create([
-            'link_text' => $request->link_text,
-            'link_url' => $request->link_url,
-            'link_content' => $request->link_content,
-            'img_src' => $request->file('img_src') ?
-                $this->imageSaveService->saveImage($request->img_src) :
-                null,
-            'img_href' => $request->img_href,
-            'position' => 1
-        ]);
+        DB::transaction(function () use ($linkDto, $linkStylesDto, $user) {
+            $this->linkService->updateLinkPosition();
+            $this->linkService->createNewLink($linkDto, $linkStylesDto, $user);
+        });
 
         return response()->json(['message' => 'Link added successfully.'], 201);
     }
@@ -77,15 +73,10 @@ class LinkController extends Controller
      */
     public function editLink(Link $link, LinkRequest $request): JsonResponse
     {
-        $link->update([
-            'link_text' => $request->link_text,
-            'link_url' => $request->link_url,
-            'link_content' => $request->link_content,
-            'img_src' => $request->file('img_src') ?
-                $this->imageSaveService->saveImage($request->img_src) :
-                $link->img_src,
-            'img_href' => $request->img_href ? $request->img_href : $link->img_href,
-        ]);
+        $linkDto = new LinkDto(...$request->only(Link::BASE_LINK_FIELD));
+        $linkStylesDto = new LinkStylesDto(...$request->except(Link::BASE_LINK_FIELD));
+
+        $this->linkService->updateLink($linkDto, $linkStylesDto, $link);
 
         return response()->json(['message' => 'Link updated successfully.'], 201);
     }
@@ -98,10 +89,7 @@ class LinkController extends Controller
      */
     public function deleteImage(Link $link): JsonResponse
     {
-        $link->update([
-            'img_src' => null,
-            'img_href' => null
-        ]);
+        $this->linkService->clearAllImagesField($link);
 
         return response()->json(['message' => 'Image deleted.'], 201);
     }
@@ -114,9 +102,7 @@ class LinkController extends Controller
      */
     public function clearImage(Link $link): JsonResponse
     {
-        $link->update([
-            'img_src' => null,
-        ]);
+        $this->linkService->clearSrcField($link);
 
         return response()->json(['message' => 'Image deleted.'], 201);
     }
@@ -129,9 +115,7 @@ class LinkController extends Controller
      */
     public function clearGiphy(Link $link): JsonResponse
     {
-        $link->update([
-            'img_href' => null,
-        ]);
+        $this->linkService->clearGiphyField($link);
 
         return response()->json(['message' => 'Giphy deleted.'], 201);
     }
@@ -149,13 +133,16 @@ class LinkController extends Controller
         return response()->json(['message' => 'Link deleted successfully.'], 204);
     }
 
+    /**
+     * Change link position
+     *
+     * @param User $user
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function changePosition(User $user, Request $request): JsonResponse
     {
-        foreach($request->data as $link) {
-            Link::where('user_id', $user->id)
-                ->where('id', $link['id'])
-                ->update(['position' => $link['position']]);
-        }
+        $this->linkService->changeLinkPosition($user, $request);
 
         return response()->json(['message' => 'Position changed!'], 201);
     }
