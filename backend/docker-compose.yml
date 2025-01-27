@@ -1,21 +1,17 @@
 version: '3.8'
 
 services:
-
-    #PHP Service
     app:
-        user: "www-data"
         build:
             context: .
             dockerfile: ./docker/php/Dockerfile
         container_name: app
         volumes:
-            - ./:/var/www
             - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+            - ./:/var/www/linkhub
         networks:
-            postgres:
+            - linkhub
 
-    #Nginx Service
     webserver:
         image: nginx:alpine
         container_name: webserver
@@ -25,12 +21,11 @@ services:
             - "80:80"
             - "443:443"
         volumes:
-            - ./:/var/www
             - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+            - ./:/var/www/linkhub
         networks:
-            - postgres
+            - linkhub
 
-    #PostgreSQL
     postgres:
         container_name: postgres
         image: postgres:16
@@ -45,10 +40,9 @@ services:
         ports:
             - "5432:5432"
         networks:
-            - postgres
+            - linkhub
         restart: unless-stopped
 
-    #PGAdmin
     pgadmin:
         container_name: pgadmin
         image: dpage/pgadmin4
@@ -60,12 +54,11 @@ services:
         ports:
             - "${PGADMIN_PORT:-5050}:80"
         networks:
-            - postgres
+            - linkhub
         restart: unless-stopped
         depends_on:
             - postgres
 
-    #MailHog
     mailhog:
         image: mailhog/mailhog
         container_name: mailhog
@@ -73,9 +66,8 @@ services:
             - "1025:1025" # smtp server
             - "8025:8025" # web ui
         networks:
-            - postgres
+            - linkhub
 
-    #RabbitMQ
     rabbit:
         image: "rabbitmq:3-management"
         container_name: rabbitmq
@@ -89,27 +81,56 @@ services:
             - "15672:15672"
             - "5672:5672"
         networks:
-            - postgres
+            - linkhub
 
-#    #Redis
-#    redis:
-#        image: redis:latest
-#        restart: always
-#        ports:
-#            - "6379:6379"
-#        volumes:
-#            - ./data:/data
-#        environment:
-#            - REDIS_PASSWORD=pass
-#            - REDIS_PORT=6379
-#            - REDIS_DATABASES=1
-#        networks:
-#            - postgres
+    redis:
+        image: redis:latest
+        restart: always
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./data:/data
+        environment:
+            - REDIS_PASSWORD=pass
+            - REDIS_PORT=6379
+            - REDIS_DATABASES=1
+        networks:
+            - linkhub
+
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+        container_name: elasticsearch
+        environment:
+            - discovery.type=single-node
+            - bootstrap.memory_lock=true
+            - xpack.security.enabled=false
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        volumes:
+            - es_data:/usr/share/elasticsearch/data
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:8.10.0
+        container_name: kibana
+        environment:
+            - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+            - xpack.security.enabled=false
+        ports:
+            - "5601:5601"
+        depends_on:
+            - elasticsearch
 
 networks:
-    postgres:
+    linkhub:
 
 volumes:
     postgres:
     pgadmin:
     database_data:
+    es_data:
