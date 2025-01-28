@@ -20,6 +20,7 @@ import Registration from './index/auth/Registration';
 import AuthUserContext from './contexts/AuthUserContext';
 import ProtectedRoute from './middleware/ProtectedRoute';
 import RestorePassword from './index/auth/RestorePassword';
+import GoogleCallback from "./index/auth/OAuth/GoogleCallback";
 
 function App() {
     const [userData, setUserData] = useState({}) //Состояние хранит объект user'a
@@ -63,7 +64,8 @@ function App() {
                                 <Route path="/auth/login" element={<Login />} />
                                 <Route path="/auth/restore-password" element={<RestorePassword />} />
                                 <Route path="/auth/change-password" element={<EditPassword />} />
-                            </Route>    
+                            </Route>
+                            <Route path="/auth/google" element={<GoogleCallback />} />
                     </Route>
                     <Route element={<ProfileBase />}> {/* Базовый компонент оборачивает дочерние */}
                         <Route path="/profile/dashboard" element={<Profile />} />

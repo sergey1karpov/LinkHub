@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\v1\Auth\RestorePasswordController;
 use App\Http\Controllers\Api\v1\Auth\UserAuthController;
 use App\Http\Controllers\Api\v1\LinkController;
+use App\Http\Controllers\Api\v1\Socialite\SocialOAuthController;
 use App\Http\Controllers\Api\v1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,6 +11,11 @@ Route::post('/registration', [UserAuthController::class, 'registration'])->name(
 Route::post('/login', [UserAuthController::class, 'login'])->name('login');
 Route::post('/restore-password', [RestorePasswordController::class, 'restorePassword'])->name('restorePassword');
 Route::post('/change-password', [RestorePasswordController::class, 'changePassword'])->name('changePassword');
+
+Route::middleware('web')->group(function () {
+    Route::get('/auth/{service}/redirect', [SocialOAuthController::class, 'redirect'])->name('oauth.redirect');
+    Route::get('/auth/{service}/callback', [SocialOAuthController::class, 'callback'])->name('oauth.callback');
+});
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');

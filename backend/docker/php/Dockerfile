@@ -1,9 +1,9 @@
 FROM php:8.3-fpm
 
-WORKDIR /var/www/linkhub
+WORKDIR /var/www
 
 # Copy composer.lock and composer.json
-COPY composer.lock composer.json /var/www/linkhub/
+COPY composer.lock composer.json /var/www/
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \

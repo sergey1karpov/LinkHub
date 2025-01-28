@@ -5,6 +5,7 @@ import axios from "axios";
 import config from "../../config";
 import TextInput from "../../inputs/TextInput";
 import SquareWithShadowButton from "../../buttons/SquareWithShadow";
+import GoogleButton from "../../buttons/GoogleButton";
 
 export default function Registration() {
     //Устанавливаем начальное состояние для переменных => [переменная, функция установщик состояния(setter)]
@@ -63,62 +64,62 @@ export default function Registration() {
 
             <div className="mt-5">
                 <form onSubmit={(event) => handleRegistration(event)}>
-                <div className="mb-6 text-center">
+                    <div className="mb-6 text-center">
                         {renderErrors('firstname')} {/* Если есть ошибка в firstname, то выводим ее */}
-                        <TextInput 
+                        <TextInput
                             value={firstname}
                             placeholder="First Name"
-                            type="text" 
+                            type="text"
                             onChangeHandler={(e) => setFirstName(e.target.value)}
                             validationError={renderErrors('firstname')}
                         />
-                    </div>   
+                    </div>
                     <div className="mb-6 text-center">
                         {renderErrors('lastname')}
-                        <TextInput 
+                        <TextInput
                             value={lastname}
                             placeholder="Last Name"
-                            type="text" 
+                            type="text"
                             onChangeHandler={(e) => setLastName(e.target.value)}
                             validationError={renderErrors('lastname')}
                         />
-                    </div> 
+                    </div>
                     <div className="mb-6 text-center">
                         {renderErrors('username')}
-                        <TextInput 
+                        <TextInput
                             value={username}
                             placeholder="Username"
-                            type="text" 
+                            type="text"
                             onChangeHandler={(e) => setUserName(e.target.value)}
                             validationError={renderErrors('username')}
                         />
-                    </div> 
+                    </div>
                     <div className="mb-6 text-center">
                         {renderErrors('slug')}
-                        <TextInput 
+                        <TextInput
                             value={slug}
                             placeholder="Slug"
-                            type="text" 
+                            type="text"
                             onChangeHandler={(e) => setSlug(e.target.value)}
                             validationError={renderErrors('slug')}
                         />
-                    </div> 
+                    </div>
                     <div className="mb-6 text-center">
                         {renderErrors('email')}
-                        <TextInput 
+                        <TextInput
                             value={email}
                             placeholder="Email"
-                            type="email" 
+                            type="email"
                             onChangeHandler={(e) => setEmail(e.target.value)}
                             validationError={renderErrors('email')}
                         />
-                    </div> 
+                    </div>
                     <div className="mb-6 text-center">
                         {renderErrors('password')}
-                        <TextInput 
+                        <TextInput
                             value={password}
                             placeholder="Password"
-                            type="password" 
+                            type="password"
                             onChangeHandler={(e) => setPassword(e.target.value)}
                             validationError={renderErrors('password')}
                         />
@@ -131,6 +132,9 @@ export default function Registration() {
                         </div>
                     </div>
                 </form>
+                <div>
+                    <GoogleButton/>
+                </div>
             </div>
         </div>
     )

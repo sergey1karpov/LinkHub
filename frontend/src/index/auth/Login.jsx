@@ -6,6 +6,7 @@ import config from "../../config";
 import TextInput from "../../inputs/TextInput";
 import DangerAlertButton from "../../buttons/DangerAlert";
 import SquareWithShadowButton from "../../buttons/SquareWithShadow";
+import GoogleButton from "../../buttons/GoogleButton";
 
 export default function Login() {
     const [emailOrUsername, setEmailOrUsername] = useState('') //Начальное состояние для username или email = ''
@@ -68,33 +69,39 @@ export default function Login() {
                 <form onSubmit={(event) => handleLogin(event)}>
                     <div className="mb-6 text-center">
                         {renderErrors('emailOrUsername')}
-                        <TextInput 
+                        <TextInput
                             value={emailOrUsername}
                             placeholder="Email or Username"
-                            type="text" 
+                            type="text"
                             onChangeHandler={(e) => setEmailOrUsername(e.target.value)}
                             validationError={renderErrors('emailOrUsername')}
                         />
-                    </div>   
+                    </div>
                     <div className="mb-6 text-center">
                         {renderErrors('password')}
-                        <TextInput 
+                        <TextInput
                             value={password}
                             placeholder="Password"
-                            type="password" 
+                            type="password"
                             onChangeHandler={(e) => setPassword(e.target.value)}
                             validationError={renderErrors('password')}
                         />
-                    </div> 
-                    <div className="mb-6 text-center">
+                    </div>
+                    <div className="mb-4 text-center">
                         <div className="text-lg font-normal text-gray-200 lg:text-xl dark:text-gray-400">
                             <div className="flex flex-wrap justify-start gap-6 mt-5">
                                 <SquareWithShadowButton>Log in NOW!</SquareWithShadowButton>
-                                <DangerAlertButton>Click, if you forgot password</DangerAlertButton>
+                                {/*<DangerAlertButton>Click, if you forgot password</DangerAlertButton>*/}
                             </div>
                         </div>
                     </div>
                 </form>
+                <div className="mt-5">
+                    <GoogleButton/>
+                </div>
+                <div className="mt-3.5">
+                    <DangerAlertButton>Click, if you forgot password</DangerAlertButton>
+                </div>
             </div>
         </div>
     )

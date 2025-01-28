@@ -8,15 +8,12 @@ use App\Http\Dto\UserCreateDto;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegistrationRequest;
 use App\Http\Services\UserService;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
 class UserAuthController extends Controller
 {
     /**
-     * Register new user
-     *
      * @param UserRegistrationRequest $request
      * @param UserService $userService
      * @return JsonResponse
@@ -35,8 +32,6 @@ class UserAuthController extends Controller
     }
 
     /**
-     * Login user
-     *
      * @param UserLoginRequest $request
      * @param UserService $userService
      * @return JsonResponse

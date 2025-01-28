@@ -23,8 +23,6 @@ class LinkController extends Controller
     ) {}
 
     /**
-     * Create new link
-     *
      * @param User $user
      * @param LinkRequest $request
      * @return JsonResponse
@@ -43,8 +41,6 @@ class LinkController extends Controller
     }
 
     /**
-     * Get link
-     *
      * @param Link $link
      * @return LinkResource
      */
@@ -54,8 +50,6 @@ class LinkController extends Controller
     }
 
     /**
-     * Get all user links
-     *
      * @param User $user
      * @return AnonymousResourceCollection
      */
@@ -65,8 +59,6 @@ class LinkController extends Controller
     }
 
     /**
-     * Update link
-     *
      * @param Link $link
      * @param LinkRequest $request
      * @return JsonResponse
@@ -82,8 +74,6 @@ class LinkController extends Controller
     }
 
     /**
-     * Clear link image - delete uploaded image and giphy
-     *
      * @param Link $link
      * @return JsonResponse
      */
@@ -95,8 +85,6 @@ class LinkController extends Controller
     }
 
     /**
-     * If upload giphy, we delete image
-     *
      * @param Link $link
      * @return JsonResponse
      */
@@ -108,8 +96,6 @@ class LinkController extends Controller
     }
 
     /**
-     * If upload image, we delete giphy
-     *
      * @param Link $link
      * @return JsonResponse
      */
@@ -121,8 +107,6 @@ class LinkController extends Controller
     }
 
     /**
-     * Delete link
-     *
      * @param Link $link
      * @return JsonResponse
      */
@@ -134,8 +118,6 @@ class LinkController extends Controller
     }
 
     /**
-     * Change link position
-     *
      * @param User $user
      * @param Request $request
      * @return JsonResponse
