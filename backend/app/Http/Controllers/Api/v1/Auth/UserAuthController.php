@@ -8,6 +8,7 @@ use App\Http\Dto\UserCreateDto;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegistrationRequest;
 use App\Http\Services\UserService;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
@@ -38,7 +39,7 @@ class UserAuthController extends Controller
      */
     public function login(UserLoginRequest $request, UserService $userService): JsonResponse
     {
-        $user = $userService->getUserByEmailOrUsername($request->emailOrUsername);
+        $user = $userService->getUserByEmailOrUsername($request->string('emailOrUsername')->toString());
 
         if(!$user) {
             return response()->json([
@@ -46,7 +47,7 @@ class UserAuthController extends Controller
             ],401);
         }
 
-        if (!Hash::check($request->password, $user->password)) {
+        if (!Hash::check($request->string('password')->toString(), $user->password)) {
             return response()->json([
                 'error' => 'Invalid password',
             ],401);
@@ -59,9 +60,15 @@ class UserAuthController extends Controller
         ]);
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function logout(): JsonResponse
     {
-        auth()->user()->tokens()->delete();
+        /** @var User $user */
+        $user = auth()->user();
+
+        $user->tokens()->delete();
 
         return response()->json('Bye');
     }

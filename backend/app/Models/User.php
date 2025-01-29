@@ -8,16 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Database\Factories\UserFactory;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    /** @var list<string> */
     protected $fillable = [
         'firstname',
         'lastname',
@@ -28,11 +26,7 @@ class User extends Authenticatable
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    /** @var list<string> */
     protected $hidden = [
         'password',
         'remember_token',
@@ -54,6 +48,7 @@ class User extends Authenticatable
         ];
     }
 
+    /** @return HasMany<Link, $this> */
     public function links(): HasMany
     {
         return $this->hasMany(Link::class)->orderBy('position');

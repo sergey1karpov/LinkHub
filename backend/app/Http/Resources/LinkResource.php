@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Link;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Link
+ */
 class LinkResource extends JsonResource
 {
     /**

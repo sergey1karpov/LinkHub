@@ -34,6 +34,7 @@ final readonly class LinkService
      */
     public function createNewLink(LinkDto $dto, LinkStylesDto $linkDto, User $user): void
     {
+        /** @var Link $link */
         $link = $user->links()->create([
             'link_text' => $dto->link_text,
             'link_url' => $dto->link_url,
@@ -45,7 +46,7 @@ final readonly class LinkService
             'position' => 1
         ]);
 
-        $link->styles()->create(get_mangled_object_vars($linkDto));
+        $link->styles()->create($linkDto->toArray());
     }
 
     /**
@@ -66,7 +67,7 @@ final readonly class LinkService
             'img_href' => $dto->img_href ? $dto->img_href : $link->img_href,
         ]);
 
-        $link->styles()->update(get_mangled_object_vars($linkDto));
+        $link->styles()->update($linkDto->toArray());
     }
 
     /**
@@ -110,7 +111,10 @@ final readonly class LinkService
      */
     public function changeLinkPosition(User $user, Request $request): void
     {
-        foreach($request->data as $link) {
+        /** @var array<Link> $links */
+        $links = $request->data;
+
+        foreach($links as $link) {
             Link::where('user_id', $user->id)
                 ->where('id', $link['id'])
                 ->update(['position' => $link['position']]);

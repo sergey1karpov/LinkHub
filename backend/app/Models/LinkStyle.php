@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\LinkStyleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LinkStyle extends Model
 {
+    /** @use HasFactory<LinkStyleFactory> */
     use HasFactory;
 
     protected $table = 'link_style';

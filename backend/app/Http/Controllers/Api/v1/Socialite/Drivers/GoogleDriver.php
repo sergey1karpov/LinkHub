@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 
 class GoogleDriver implements SocialOAuth
 {
@@ -16,8 +17,11 @@ class GoogleDriver implements SocialOAuth
      */
     public function redirect(): JsonResponse
     {
+        /** @var AbstractProvider $provider */
+        $provider = Socialite::driver('google');
+
         return response()->json([
-            'url' => Socialite::driver('google')
+            'url' => $provider
                 ->stateless()
                 ->redirect()
                 ->getTargetUrl(),
@@ -29,8 +33,12 @@ class GoogleDriver implements SocialOAuth
      */
     public function callback(): JsonResponse
     {
-        $user = Socialite::driver('google')->stateless()->user();
+        /** @var AbstractProvider $provider */
+        $provider = Socialite::driver('google');
 
+        $user = $provider->stateless()->user();
+
+        /** @var User $user */
         $user = User::firstOrCreate(
             ['email' => $user->getEmail()],
             [

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use stdClass;
 
 class RestorePasswordController
 {
@@ -29,6 +30,9 @@ class RestorePasswordController
         //Generate token
         $token = Str::random(60);
 
+        //ToDo: Connect queue
+        //ToDo: Make transaction
+
         //Inserts to 'password_reset_tokens' new row with email, token, and time, where token has been generated
         //If db already has row with email, we updated token with new time
         DB::table('password_reset_tokens')->updateOrInsert(
@@ -40,7 +44,6 @@ class RestorePasswordController
         $resetLink = 'http://localhost:3000/auth/change-password?token=' . $token;
 
         //Send email
-        //ToDo: Connect queue
         Mail::to($request->email)->send(new RestorePasswordMail($user, $resetLink));
     }
 
@@ -53,6 +56,7 @@ class RestorePasswordController
     public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
         //Search row in db with token
+        /** @var stdClass|null $resetToken */
         $resetToken = DB::table('password_reset_tokens')->where('token', $request->token)->first();
 
         //If token not found
@@ -63,7 +67,10 @@ class RestorePasswordController
         }
 
         //If token lifetime is over(15 minutes)
-        if ($this->timeDiff(Carbon::parse($resetToken->created_at), Carbon::parse($request->timeToClickLink))) {
+        if ($this->timeDiff(
+            Carbon::parse($resetToken->created_at),
+            Carbon::parse($request->string('timeToClickLink')->toString())
+        )) {
             return response()->json([
                 'error' => "Unfortunately, the link to change your password has expired",
             ],401);
@@ -71,7 +78,7 @@ class RestorePasswordController
 
         //If we haven't got errors, we set new password
         User::where('email', $resetToken->email)->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->string('password')->toString())
         ]);
 
         return response()->json('Password reset successfully');

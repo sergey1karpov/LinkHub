@@ -59,4 +59,12 @@ readonly final class LinkStylesDto
         //Animation
         public ?string $card_animation = null
     ) {}
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return get_object_vars($this);
+    }
 }

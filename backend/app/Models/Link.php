@@ -3,16 +3,19 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\LinkFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Link extends Model
 {
+    /** @use HasFactory<LinkFactory> */
     use HasFactory;
 
     protected $table = 'links';
 
+    /** @var list<string>  */
     public const BASE_LINK_FIELD = [
         'link_text',
         'link_url',
@@ -21,6 +24,7 @@ class Link extends Model
         'img_src'
     ];
 
+    /** @var list<string> */
     protected $fillable = [
         'link_text',
         'link_url',
@@ -31,6 +35,7 @@ class Link extends Model
         'user_id'
     ];
 
+    /** @return HasOne<LinkStyle, $this> */
     public function styles(): HasOne
     {
         return $this->hasOne(LinkStyle::class, 'link_id', 'id');
