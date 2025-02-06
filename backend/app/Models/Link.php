@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -17,13 +18,13 @@ class Link extends Model
 
     public const IMAGE_PATH = 'links/';
 
-    /** @var list<string>  */
+    /** @var list<string> */
     public const BASE_LINK_FIELD = [
         'link_text',
         'link_url',
         'link_content',
         'img_href',
-        'img_src'
+        'img_src',
     ];
 
     /** @var list<string> */
@@ -34,7 +35,7 @@ class Link extends Model
         'img_src',
         'img_href',
         'position',
-        'user_id'
+        'user_id',
     ];
 
     /** @return HasOne<LinkStyle, $this> */

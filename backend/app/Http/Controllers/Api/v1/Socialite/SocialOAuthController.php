@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\v1\Socialite;
@@ -14,8 +15,6 @@ readonly class SocialOAuthController
     ) {}
 
     /**
-     * @param string $driver
-     * @return JsonResponse
      * @throws Exception
      */
     public function redirect(string $driver): JsonResponse
@@ -27,8 +26,6 @@ readonly class SocialOAuthController
     }
 
     /**
-     * @param string $driver
-     * @return JsonResponse
      * @throws Exception
      */
     public function callback(string $driver): JsonResponse

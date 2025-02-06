@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\v1;
@@ -22,12 +23,7 @@ class LinkController extends Controller
         private readonly LinkService $linkService
     ) {}
 
-    /**
-     * @param User $user
-     * @param LinkRequest $request
-     * @return JsonResponse
-     */
-    public function addLink (User $user, LinkRequest $request): JsonResponse
+    public function addLink(User $user, LinkRequest $request): JsonResponse
     {
         $linkDto = new LinkDto(...$request->only(Link::BASE_LINK_FIELD));
         $linkStylesDto = new LinkStylesDto(...$request->except(Link::BASE_LINK_FIELD));
@@ -40,29 +36,16 @@ class LinkController extends Controller
         return response()->json(['message' => 'Link added successfully.'], 201);
     }
 
-    /**
-     * @param Link $link
-     * @return LinkResource
-     */
     public function getLink(Link $link): LinkResource
     {
         return new LinkResource($link);
     }
 
-    /**
-     * @param User $user
-     * @return AnonymousResourceCollection
-     */
     public function allLinks(User $user): AnonymousResourceCollection
     {
         return LinkResource::collection($user->links);
     }
 
-    /**
-     * @param Link $link
-     * @param LinkRequest $request
-     * @return JsonResponse
-     */
     public function editLink(Link $link, LinkRequest $request): JsonResponse
     {
         $linkDto = new LinkDto(...$request->only(Link::BASE_LINK_FIELD));
@@ -73,10 +56,6 @@ class LinkController extends Controller
         return response()->json(['message' => 'Link updated successfully.'], 201);
     }
 
-    /**
-     * @param Link $link
-     * @return JsonResponse
-     */
     public function deleteImage(Link $link): JsonResponse
     {
         $this->linkService->clearAllImagesField($link);
@@ -84,10 +63,6 @@ class LinkController extends Controller
         return response()->json(['message' => 'Image deleted.'], 201);
     }
 
-    /**
-     * @param Link $link
-     * @return JsonResponse
-     */
     public function clearImage(Link $link): JsonResponse
     {
         $this->linkService->clearSrcField($link);
@@ -95,10 +70,6 @@ class LinkController extends Controller
         return response()->json(['message' => 'Image deleted.'], 201);
     }
 
-    /**
-     * @param Link $link
-     * @return JsonResponse
-     */
     public function clearGiphy(Link $link): JsonResponse
     {
         $this->linkService->clearGiphyField($link);
@@ -106,10 +77,6 @@ class LinkController extends Controller
         return response()->json(['message' => 'Giphy deleted.'], 201);
     }
 
-    /**
-     * @param Link $link
-     * @return JsonResponse
-     */
     public function deleteLink(Link $link): JsonResponse
     {
         $link->delete();
@@ -117,11 +84,6 @@ class LinkController extends Controller
         return response()->json(['message' => 'Link deleted successfully.'], 204);
     }
 
-    /**
-     * @param User $user
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function changePosition(User $user, Request $request): JsonResponse
     {
         $this->linkService->changeLinkPosition($user, $request);

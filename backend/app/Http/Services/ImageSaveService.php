@@ -1,34 +1,31 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Services;
 
 use Illuminate\Http\UploadedFile;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\ImageInterface;
 
 class ImageSaveService
 {
     public function saveImage(UploadedFile $photo, string $imagePath): string
     {
-        $manager = new ImageManager(new Driver());
+        $manager = new ImageManager(new Driver);
         $imgName = hexdec(uniqid()).'.'.$photo->getClientOriginalExtension();
         $img = $manager->read($photo);
 
-        $img  = $this->isScaleImage($photo->getClientOriginalExtension(), $img);
+        $img = $this->isScaleImage($photo->getClientOriginalExtension(), $img);
 
-        $this->isDirectoryExist('public/uploads/images/' . $imagePath);
+        $this->isDirectoryExist('public/uploads/images/'.$imagePath);
 
-        $img->save(base_path('public/uploads/images/' . $imagePath . $imgName));
-        return 'uploads/images/' . $imagePath . $imgName;
+        $img->save(base_path('public/uploads/images/'.$imagePath.$imgName));
+
+        return 'uploads/images/'.$imagePath.$imgName;
     }
 
-    /**
-     * @param string $mimeType
-     * @param ImageInterface $image
-     * @return ImageInterface
-     */
     private function isScaleImage(string $mimeType, ImageInterface $image): ImageInterface
     {
         return match ($mimeType) {
@@ -37,13 +34,9 @@ class ImageSaveService
         };
     }
 
-    /**
-     * @param string $path
-     * @return void
-     */
     private function isDirectoryExist(string $path): void
     {
-        if (!is_dir(base_path($path))) {
+        if (! is_dir(base_path($path))) {
             mkdir(base_path($path));
         }
     }

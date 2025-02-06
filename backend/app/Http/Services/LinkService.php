@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Services;
@@ -18,20 +19,12 @@ final readonly class LinkService
 
     /**
      * Increment position field all previous links, because new user link must have first position
-     *
-     * @return void
      */
     public function updateLinkPosition(): void
     {
         DB::table('links')->increment('position');
     }
 
-    /**
-     * @param LinkDto $dto
-     * @param LinkStylesDto $linkDto
-     * @param User $user
-     * @return void
-     */
     public function createNewLink(LinkDto $dto, LinkStylesDto $linkDto, User $user): void
     {
         /** @var Link $link */
@@ -43,18 +36,12 @@ final readonly class LinkService
                 $this->imageSaveService->saveImage($dto->img_src, LINK::IMAGE_PATH) :
                 null,
             'img_href' => $dto->img_href,
-            'position' => 1
+            'position' => 1,
         ]);
 
         $link->styles()->create($linkDto->toArray());
     }
 
-    /**
-     * @param LinkDto $dto
-     * @param LinkStylesDto $linkDto
-     * @param Link $link
-     * @return void
-     */
     public function updateLink(LinkDto $dto, LinkStylesDto $linkDto, Link $link): void
     {
         $link->update([
@@ -70,22 +57,14 @@ final readonly class LinkService
         $link->styles()->update($linkDto->toArray());
     }
 
-    /**
-     * @param Link $link
-     * @return void
-     */
     public function clearAllImagesField(Link $link): void
     {
         $link->update([
             'img_src' => null,
-            'img_href' => null
+            'img_href' => null,
         ]);
     }
 
-    /**
-     * @param Link $link
-     * @return void
-     */
     public function clearSrcField(Link $link): void
     {
         $link->update([
@@ -93,10 +72,6 @@ final readonly class LinkService
         ]);
     }
 
-    /**
-     * @param Link $link
-     * @return void
-     */
     public function clearGiphyField(Link $link): void
     {
         $link->update([
@@ -104,17 +79,12 @@ final readonly class LinkService
         ]);
     }
 
-    /**
-     * @param User $user
-     * @param Request $request
-     * @return void
-     */
     public function changeLinkPosition(User $user, Request $request): void
     {
         /** @var array<Link> $links */
         $links = $request->data;
 
-        foreach($links as $link) {
+        foreach ($links as $link) {
             Link::where('user_id', $user->id)
                 ->where('id', $link['id'])
                 ->update(['position' => $link['position']]);

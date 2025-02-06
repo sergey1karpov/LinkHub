@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Services;
@@ -9,10 +10,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    /**
-     * @param UserCreateDto $dto
-     * @return User
-     */
     public function createNewUser(UserCreateDto $dto): User
     {
         return User::create([
@@ -21,17 +18,14 @@ class UserService
             'username' => $dto->username,
             'slug' => $dto->slug,
             'email' => $dto->email,
-            'password' => Hash::make($dto->password)
+            'password' => Hash::make($dto->password),
         ]);
     }
 
     /**
      * Get user by email or username
-     *
-     * @param string $emailOrUsername
-     * @return User|null
      */
-    public function getUserByEmailOrUsername(string $emailOrUsername): User|null
+    public function getUserByEmailOrUsername(string $emailOrUsername): ?User
     {
         return User::where('email', $emailOrUsername)
             ->orWhere('username', $emailOrUsername)

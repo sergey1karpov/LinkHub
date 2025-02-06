@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\v1\Socialite\Drivers;
@@ -12,9 +13,6 @@ use Laravel\Socialite\Two\AbstractProvider;
 
 class GoogleDriver implements SocialOAuth
 {
-    /**
-     * @return JsonResponse
-     */
     public function redirect(): JsonResponse
     {
         /** @var AbstractProvider $provider */
@@ -28,9 +26,6 @@ class GoogleDriver implements SocialOAuth
         ]);
     }
 
-    /**
-     * @return JsonResponse
-     */
     public function callback(): JsonResponse
     {
         /** @var AbstractProvider $provider */
@@ -45,7 +40,7 @@ class GoogleDriver implements SocialOAuth
                 'email' => $user->getEmail(),
                 'password' => Hash::make(Str::random(12)),
                 'username' => $user->getName(),
-                'slug' => 'id-' . $user->getId(),
+                'slug' => 'id-'.$user->getId(),
                 'firstname' => 'John',
                 'lastname' => 'Doe',
                 'avatar' => $user->getAvatar(),
@@ -55,7 +50,7 @@ class GoogleDriver implements SocialOAuth
         return response()->json([
             'userId' => $user->id,
             'username' => $user->username,
-            'token' => $user->createToken("Bearer TOKEN")->plainTextToken
+            'token' => $user->createToken('Bearer TOKEN')->plainTextToken,
         ]);
     }
 }
