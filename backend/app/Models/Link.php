@@ -15,6 +15,8 @@ class Link extends Model
 
     protected $table = 'links';
 
+    public const IMAGE_PATH = 'links/';
+
     /** @var list<string>  */
     public const BASE_LINK_FIELD = [
         'link_text',

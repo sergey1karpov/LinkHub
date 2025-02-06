@@ -40,7 +40,7 @@ final readonly class LinkService
             'link_url' => $dto->link_url,
             'link_content' => $dto->link_content,
             'img_src' => $dto->img_src ?
-                $this->imageSaveService->saveImage($dto->img_src) :
+                $this->imageSaveService->saveImage($dto->img_src, LINK::IMAGE_PATH) :
                 null,
             'img_href' => $dto->img_href,
             'position' => 1
@@ -62,7 +62,7 @@ final readonly class LinkService
             'link_url' => $dto->link_url,
             'link_content' => $dto->link_content,
             'img_src' => $dto->img_src ?
-                $this->imageSaveService->saveImage($dto->img_src) :
+                $this->imageSaveService->saveImage($dto->img_src, LINK::IMAGE_PATH) :
                 $link->img_src,
             'img_href' => $dto->img_href ? $dto->img_href : $link->img_href,
         ]);

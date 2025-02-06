@@ -6,22 +6,45 @@ namespace App\Http\Services;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Interfaces\ImageInterface;
 
 class ImageSaveService
 {
-    public function saveImage(UploadedFile $photo): string
+    public function saveImage(UploadedFile $photo, string $imagePath): string
     {
         $manager = new ImageManager(new Driver());
         $imgName = hexdec(uniqid()).'.'.$photo->getClientOriginalExtension();
         $img = $manager->read($photo);
 
-        if($photo->getClientOriginalExtension() == 'gif') {
-            $img = $img->scale(150);
-        } else {
-            $img = $img->cover(300,300);
-        }
+        $img  = $this->isScaleImage($photo->getClientOriginalExtension(), $img);
 
-        $img->save(base_path('public/uploads/images/'.$imgName));
-        return 'uploads/images/'.$imgName;
+        $this->isDirectoryExist('public/uploads/images/' . $imagePath);
+
+        $img->save(base_path('public/uploads/images/' . $imagePath . $imgName));
+        return 'uploads/images/' . $imagePath . $imgName;
+    }
+
+    /**
+     * @param string $mimeType
+     * @param ImageInterface $image
+     * @return ImageInterface
+     */
+    private function isScaleImage(string $mimeType, ImageInterface $image): ImageInterface
+    {
+        return match ($mimeType) {
+            'gif' => $image->scale(150),
+            default => $image->cover(300, 300),
+        };
+    }
+
+    /**
+     * @param string $path
+     * @return void
+     */
+    private function isDirectoryExist(string $path): void
+    {
+        if (!is_dir(base_path($path))) {
+            mkdir(base_path($path));
+        }
     }
 }

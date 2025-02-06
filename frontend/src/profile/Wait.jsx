@@ -1,15 +1,11 @@
-const styles = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    backgroundColor: '#08090a'
-};
+import '../Wait.css'
 
 export default function Wait() {
     return (
-        <div style={styles}>
-            <h1 style={{ color: 'white' }}>Loading...</h1>
+        <div className="textWrapper">
+                <p className="text">Loading...</p>
+                <div className="invertbox"></div>
         </div>
+
     );
 }
