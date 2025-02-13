@@ -11,6 +11,7 @@ use Intervention\Image\Interfaces\ImageInterface;
 
 class ImageSaveService
 {
+    const SAVE_DIRECTORY_PATH = 'uploads/images/';
     public function saveImage(UploadedFile $photo, string $imagePath): string
     {
         $manager = new ImageManager(new Driver);
@@ -19,11 +20,11 @@ class ImageSaveService
 
         $img = $this->isScaleImage($photo->getClientOriginalExtension(), $img);
 
-        $this->isDirectoryExist('uploads/images/'.$imagePath);
+        $this->isDirectoryExist('public/'.self::SAVE_DIRECTORY_PATH.$imagePath);
 
-        $img->save(public_path('uploads/images/'.$imagePath.$imgName));
+        $img->save(base_path('public/'.self::SAVE_DIRECTORY_PATH.$imagePath.$imgName));
 
-        return 'uploads/images/'.$imagePath.$imgName;
+        return self::SAVE_DIRECTORY_PATH.$imagePath.$imgName;
     }
 
     private function isScaleImage(string $mimeType, ImageInterface $image): ImageInterface
@@ -36,8 +37,8 @@ class ImageSaveService
 
     private function isDirectoryExist(string $path): void
     {
-        if (! is_dir(public_path($path))) {
-            mkdir(public_path($path));
+        if (! is_dir(base_path($path))) {
+            mkdir(base_path($path));
         }
     }
 }
