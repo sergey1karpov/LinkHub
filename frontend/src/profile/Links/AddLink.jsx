@@ -13,6 +13,11 @@ export default function AddLink() {
     const [linkContent, setLinkContent] = useState('') //Доп контент к ссылке если есть
     const [img, setImg] = useState('') //Загружаемое юзером изображение
     const [giphy, setGiphy] = useState('') //Вместо изображения можно подтянуть гифку с giphy.com
+    const [fonts, setFonts] = useState([])
+
+    //styles
+    const [textFont, setTextFont] = useState('')
+    const [textColor, setTextColor] = useState('')
 
     const [viewThumbnail, setViewThumbnail] = useState('') //Изображение которое отображается в превью ссылки, не отправляется в бд!!!
     const [errors, setErrors] = useState([]) //Валидационные ошибки если есть
@@ -20,6 +25,14 @@ export default function AddLink() {
 
     useEffect(() => {
         document.title = 'Create link'
+
+        try {
+            axios.get(`${config.BACKEND_API_URL}/profile/fonts/get-fonts`)
+                .then((response) => setFonts(response.data)) //Устанавливаем полученные ссылки в links
+                .catch((err) => console.log(err))
+        } catch (error) {
+            console.log(error)
+        }
     }, [])
 
     //Рендер валидационных ошибок если есть
@@ -57,7 +70,10 @@ export default function AddLink() {
         data.append("link_content", linkContent)
         data.append("img_src", img)
         data.append("img_href", giphy)
-        data.append("user_id", localStorage.getItem('chrry-userId'))
+        // data.append("user_id", localStorage.getItem('chrry-userId'))
+
+        //styles
+        data.append("link_font_color", textColor)
 
         try {
             await axios.post(`${config.BACKEND_API_URL}/profile/${localStorage.getItem('chrry-userId')}/add-link`, data)
@@ -84,6 +100,23 @@ export default function AddLink() {
         }
     }
 
+    function selectFont(font) {
+        const fontFace = `
+        @font-face {
+            font-family: "${font.font_name}";
+            src: url("${font.font_path}") format('truetype');
+        }
+    `;
+
+        // Создаем тег <style> и добавляем в <head>
+        const style = document.createElement("style");
+        style.innerHTML = fontFace;
+        document.head.appendChild(style);
+
+        // Устанавливаем имя шрифта
+        setTextFont(font.font_name);
+    }
+
     return ( 
         <div>
             {/* Компонент отрисовки превью созданной ссылки, того как она будет выглядеть после создания */}
@@ -97,63 +130,74 @@ export default function AddLink() {
                 setViewThumbnail={setViewThumbnail} //Сеттер для превью
                 giphy={giphy} //Гифка с giphy
                 setGiphy={setGiphy} //Сеттер для giphy
+
+                //styles
+                textColor={textColor}
+                textFont={textFont}
+
             />
             <div className="max-w-full mx-auto pl-2 pr-2 mb-5 bg-[#08090a]"> 
-                <div className="max-w-screen-xl mx-auto pl-2 pr-2 mb-5 bg-[#08090a]"> 
+                <div className="max-w-screen-xl mx-auto pl-2 pr-2 mb-5 bg-[#08090a]">
                     <form onSubmit={(event) => handleAddLink(event)} encType="multipart/form-data">
                         <div className="text-center w-full">
                             {renderErrors('link_text')}
-                            <input 
-                                value={linkText} 
-                                onChange={(e) => setLinkText(e.target.value)} 
-                                placeholder="Link text" 
-                                type="text" 
-                                className={renderErrors('linkText') ? "text-gray-900 text-xl rounded-lg block w-full p-3.5 bg-red-300 mt-2" : "text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2" }
+                            <input
+                                value={linkText}
+                                onChange={(e) => setLinkText(e.target.value)}
+                                placeholder="Link text"
+                                type="text"
+                                className={renderErrors('linkText') ? "text-gray-900 text-xl rounded-lg block w-full p-3.5 bg-red-300 mt-2" : "text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2"}
                             />
-                        </div>  
+                        </div>
                         <div className="text-center w-full">
                             {renderErrors('link_url')}
-                            <input 
+                            <input
                                 maxLength={255}
-                                value={linkUrl} 
-                                onChange={(e) => setLinkUrl(e.target.value)} 
-                                placeholder="URL Address" 
-                                type="text" 
-                                className={renderErrors('linkUrl') ? "text-gray-900 text-xl rounded-lg block w-full p-3.5 bg-red-300 mt-2" : "text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2" }
+                                value={linkUrl}
+                                onChange={(e) => setLinkUrl(e.target.value)}
+                                placeholder="URL Address"
+                                type="text"
+                                className={renderErrors('linkUrl') ? "text-gray-900 text-xl rounded-lg block w-full p-3.5 bg-red-300 mt-2" : "text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2"}
                             />
-                        </div> 
+                        </div>
                         <div className="text-center w-full">
                             {renderErrors('link_content')}
-                            <textarea 
-                                value={linkContent} 
-                                onChange={(e) => setLinkContent(e.target.value)} 
-                                placeholder="If you want to expand some content when you click on a link" 
-                                type="text" 
-                                className={renderErrors('linkContent') ? "text-gray-900 text-xl rounded-lg block w-full p-3.5 bg-red-300 mt-2" : "text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2" }
+                            <textarea
+                                value={linkContent}
+                                onChange={(e) => setLinkContent(e.target.value)}
+                                placeholder="If you want to expand some content when you click on a link"
+                                type="text"
+                                className={renderErrors('linkContent') ? "text-gray-900 text-xl rounded-lg block w-full p-3.5 bg-red-300 mt-2" : "text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2"}
                             />
-                        </div> 
+                        </div>
                         <div className="text-center w-full">
                             {renderErrors('img_src')}
-                            <label htmlFor="dropzone-file" className="mt-2 flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                            <label htmlFor="dropzone-file"
+                                   className="mt-2 flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                    <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                                     </svg>
-                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload image</span> or drag and drop</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPEG, JPG or GIF (MAX. 2mb)</p>
+                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
+                                        className="font-semibold">Click to upload image</span> or drag and drop</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPEG, JPG or GIF (MAX.
+                                        2mb)</p>
                                 </div>
-                                <input 
+                                <input
                                     onChange={(e) => {
                                         handleResizeImage(e) //Функция обработчик для картинки превью
                                         setGiphy('') //В случае если у нас уже установлена гифка, и мы хотим загрузить картинку, то через setGiphy удаляем гифку
-                                    }} 
-                                    placeholder="Upload image" 
-                                    type="file" 
+                                    }}
+                                    placeholder="Upload image"
+                                    type="file"
                                     id="dropzone-file"
-                                    className={renderErrors('img') ? "text-gray-900 text-xl rounded-lg block w-full p-3.5 bg-red-300 mt-2 hidden" : "text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2 hidden" }
+                                    className={renderErrors('img') ? "text-gray-900 text-xl rounded-lg block w-full p-3.5 bg-red-300 mt-2 hidden" : "text-gray-900 text-lg rounded-lg block w-full p-3.5 mt-2 hidden"}
                                 />
                             </label>
-                        </div>  
+                        </div>
 
                         {/* Компонент инпута поиска и подгрузки гиф с сервиса giphy.com */}
                         {/* В компонент передаем 2 пропса: setViewThumbnail - установка изображения в превью, setGiphy - установка гифки */}
@@ -161,11 +205,35 @@ export default function AddLink() {
                         и при выборе этой гифки мы очищаем viewThumbnail через setViewThumbnail и устанавливаем гифку setGiphy*/}
                         <GiphyInput setViewThumbnail={setViewThumbnail} setGiphy={setGiphy} setImg={setImg}/>
 
+
+                        <div className="text-center w-full max-w-full mt-5">
+                            <label htmlFor="hs-color-input" className="block text-sm font-medium mb-1 text-white">Select text font</label>
+                            <select id="countries"
+                                    onChange={(e) => selectFont(JSON.parse(e.target.value))}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                {fonts && fonts.map((font) => (
+                                    <option key={font.font_name} value={JSON.stringify(font)} >{font.font_name}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="text-center w-full max-w-full mt-3">
+                            <label htmlFor="hs-color-input" className="block text-sm font-medium mb-1 text-white">Text
+                                color</label>
+                            <input type="color"
+                                   onChange={(e) => setTextColor(e.target.value)}
+                                   className="w-full max-w-full p-1 h-10 block bg-white border border-gray-200 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700"
+                                   id="hs-color-input" title="Choose your color"/>
+                        </div>
+
+
                         <div className="text-center">
                             <div className="text-lg font-normal text-gray-200 lg:text-xl dark:text-gray-400">
                                 <div className="flex flex-wrap justify-start gap-6 mt-5">
-                                    <button className="mb-5 rounded group relative inline-flex border border-green-500 focus:outline-none w-full sm:w-auto">
-                                        <span className="rounded w-full inline-flex items-center justify-center self-stretch px-4 py-2 text-xl text-white text-center font-bold uppercase bg-green-500 ring-1 ring-green-500 ring-offset-1 ring-offset-greeen-500 transform transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1 group-focus:-translate-y-1 group-focus:-translate-x-1">
+                                    <button
+                                        className="mb-5 rounded group relative inline-flex border border-green-500 focus:outline-none w-full sm:w-auto">
+                                        <span
+                                            className="rounded w-full inline-flex items-center justify-center self-stretch px-4 py-2 text-xl text-white text-center font-bold uppercase bg-green-500 ring-1 ring-green-500 ring-offset-1 ring-offset-greeen-500 transform transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1 group-focus:-translate-y-1 group-focus:-translate-x-1">
                                             Add new super link
                                         </span>
                                     </button>
@@ -175,6 +243,6 @@ export default function AddLink() {
                     </form>
                 </div>
             </div>
-        </div>    
+        </div>
     )
 }

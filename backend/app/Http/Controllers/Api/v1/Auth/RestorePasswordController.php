@@ -24,6 +24,8 @@ class RestorePasswordController
         // Search user in database by email
         $user = User::where('email', $request->email)->firstOrFail();
 
+        // Все что ниже засунуть в джобу, в которую только передадим id юзера
+
         // Generate token
         $token = Str::random(60);
 

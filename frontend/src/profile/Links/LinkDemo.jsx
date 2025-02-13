@@ -7,7 +7,7 @@ import config from "../../config";
 export default function LinkDemo(props) {
     const params = useParams()
 
-    const [isChecked, setIsChecked] = useState(false); //Состояние дня/ночи для фона
+    const [isChecked, setIsChecked] = useState(true); //Состояние дня/ночи для фона
     const [alertColor, setAlertColor] = useState('') //Состояние для цвета успеха при добавлении/изменении ссылки
     const [alertText, setAlertText] = useState('') //Состояние для текста при успешном добавлении/изменении ссылки
 
@@ -63,10 +63,10 @@ export default function LinkDemo(props) {
     }, [props.isLinkAdded])
 
     return (
-        <div className="fixed mt-24 w-full mx-auto max-w-screen-xl z-50" style={{'position': 'sticky', 'top': 0}}>
+        <div className="fixed mt-24 w-full mx-auto max-w-screen-xl z-60" style={{'position': 'sticky', 'top': 0}}>
             <div id="matureBlock" className={ `${isChecked ? 'bg-[#08090a]' : 'bg-white'} mt-24 rounded-b-lg mt-1 mx-auto max-w-screen-xl px-4 pt-4 pb-4 sm:px-6 lg:px-8` } >
                     <div className="group block">
-                        <table className="table w-full">
+                        <table className="table w-full bg-gray-200">
                             <tbody>
                             <tr data-index="" data-position="">
                                 <td>
@@ -114,8 +114,12 @@ export default function LinkDemo(props) {
                                                         <div className="col-span-10 text-center flex items-center">
                                                             <div className="ml-3 mr-3">
                                                                 <h4 id="title-text" className="drop-shadow-md text-ellipsis"
-                                                                    style={{'margin': '0 0 0 5px'}}>
-                                                                        {props.title && props.title} <span style={{color: 'white', fontWeight: 'bold'}}>{alertText}</span>
+                                                                    style={{
+                                                                        'margin': '0 0 0 5px',
+                                                                        'color': props.textColor,
+                                                                        'fontFamily': props.textFont,
+                                                                    }}>
+                                                                    {props.title && props.title} {alertText}
                                                                 </h4>
                                                             </div>
                                                         </div>

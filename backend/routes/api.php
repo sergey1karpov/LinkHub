@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\v1\Auth\RestorePasswordController;
 use App\Http\Controllers\Api\v1\Auth\UserAuthController;
+use App\Http\Controllers\Api\v1\FontController;
 use App\Http\Controllers\Api\v1\LinkController;
 use App\Http\Controllers\Api\v1\Socialite\SocialOAuthController;
 use App\Http\Controllers\Api\v1\UserController;
@@ -21,6 +22,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
     Route::prefix('/profile')->group(function () {
         Route::get('/{user}', [UserController::class, 'getUser'])->name('getUser');
+
+        Route::get('/fonts/get-fonts', [FontController::class, 'getFonts'])->name('getFonts');
 
         Route::post('/{user}/add-link', [LinkController::class, 'addLink'])->name('addLink');
         Route::get('/link/{link}', [LinkController::class, 'getLink'])->name('getLink');
