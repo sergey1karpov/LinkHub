@@ -19,9 +19,9 @@ class ImageSaveService
 
         $img = $this->isScaleImage($photo->getClientOriginalExtension(), $img);
 
-        $this->isDirectoryExist('public/uploads/images/'.$imagePath);
+        $this->isDirectoryExist('uploads/images/'.$imagePath);
 
-        $img->save(base_path('public/uploads/images/'.$imagePath.$imgName));
+        $img->save(public_path('uploads/images/'.$imagePath.$imgName));
 
         return 'uploads/images/'.$imagePath.$imgName;
     }
@@ -36,8 +36,8 @@ class ImageSaveService
 
     private function isDirectoryExist(string $path): void
     {
-        if (! is_dir(base_path($path))) {
-            mkdir(base_path($path));
+        if (! is_dir(public_path($path))) {
+            mkdir(public_path($path));
         }
     }
 }
