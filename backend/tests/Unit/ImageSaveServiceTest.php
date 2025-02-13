@@ -3,22 +3,28 @@
 namespace Tests\Unit;
 
 use App\Http\Services\ImageSaveService;
+use App\Models\Link;
 use Illuminate\Http\UploadedFile;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
+use Illuminate\Support\Facades\Storage;
 use Mockery;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class ImageSaveServiceTest extends TestCase
 {
     public function test_saveImage()
     {
         $fakePhoto = UploadedFile::fake()->image('fake-photo.jpg');
-        $fakePath = 'links/';
 
         $imageSaveService = new ImageSaveService();
-        $imagePath = $imageSaveService->saveImage($fakePhoto, $fakePath);
+        $imagePath = $imageSaveService->saveImage($fakePhoto, Link::IMAGE_PATH);
 
-        dd($imagePath);
+        $this->assertEquals(
+            $imagePath,
+            ImageSaveService::SAVE_DIRECTORY_PATH.Link::IMAGE_PATH.str_replace(
+                'uploads/images/links/',
+                '',
+                $imagePath
+            )
+        );
     }
 }
