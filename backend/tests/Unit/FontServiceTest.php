@@ -9,13 +9,13 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class FontServiceTest extends TestCase
 {
-    public function test_getPreparedFonts()
+    public function test_get_prepared_fonts()
     {
         $whatWeExcept = [
             [
-                "font_name" => "BleekerCyrillic",
-                "font_path" => "http://localhost/fonts/BleekerCyrillic.ttf",
-            ]
+                'font_name' => 'BleekerCyrillic',
+                'font_path' => 'http://localhost/fonts/BleekerCyrillic.ttf',
+            ],
         ];
 
         $file[] = Mockery::mock(SplFileInfo::class, ['BleekerCyrillic.ttf', '../Files/BleekerCyrillic.ttf', '../Files/BleekerCyrillic.ttf'])
@@ -25,7 +25,7 @@ class FontServiceTest extends TestCase
             ->andReturn('http://localhost/fonts/BleekerCyrillic.ttf')
             ->getMock();
 
-        $fontService = new FontService();
+        $fontService = new FontService;
         $fonts = $fontService->getPreparedFonts($file);
 
         $this->assertEquals($whatWeExcept, $fonts);
