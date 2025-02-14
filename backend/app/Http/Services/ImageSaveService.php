@@ -12,6 +12,7 @@ use Intervention\Image\Interfaces\ImageInterface;
 class ImageSaveService
 {
     const SAVE_DIRECTORY_PATH = 'uploads/images/';
+
     public function saveImage(UploadedFile $photo, string $imagePath): string
     {
         $manager = new ImageManager(new Driver);
